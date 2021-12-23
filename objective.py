@@ -2,17 +2,17 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
-def get_embedding(weights, data):
+def get_embedding(weights, X):
     """
-    Embed the data in 1D space via the dot product.
+    Embed X, often a multidimensional matrix, into 1D space via the dot product.
 
     """
-    return np.dot(weights, data.T)
+    return np.dot(weights, X.T)
 
 
-def get_discriminant(X, a=1.1, b=2):
+def get_discriminant(X, a, b):
     """
-    Discriminative function that separates the data into two clusters.
+    Discriminative function that separates the data X into two clusters.
 
     Because f() has a minimum at both x=±1, minimizing f() will map many of our
     datapoints to x=1 and many of them to x=-1, resulting in two different clusters.
@@ -21,9 +21,10 @@ def get_discriminant(X, a=1.1, b=2):
     like h() except when x is too big we clip its growth with linear functions 
     and a cubic spline interpolation.
 
-    if |x| <= a, f() has two valleys around ±1
-    if a < |x| <= b, then there is a cubic spline to connect the valleys and the linear function
-    if |x| > b, f() is a linear function
+    Note: 1 < a < b.
+    if |x| <= a, f() has two valleys around ±1.
+    if a < |x| <= b, f() is a cubic spline connecting the valleys and the linear function.
+    if |x| > b, f() is a linear function.
 
     ---- Parameters ----
     embedding (n_samples): array of 1D embeddings
@@ -90,31 +91,31 @@ def plot_discriminant(outdir):
     fig.savefig(outdir + '/discriminant.png')
 
 
-def get_penalty(weights, data):
+def get_penalty(weights, X):
     """
     Compute the penalty term.
 
-    The penalty term encourages the data to be evenly split between
+    The penalty term encourages the data X to be evenly split between
     the two clusters at x=±1. This prevents the objective function 
     from achieving the useless trivial solution of clustering all of
     the data into a single cluster.
     """
 
-    return .5 * np.square(np.dot(weights, np.mean(data, axis=0)))
+    return .5 * np.square(np.dot(weights, np.mean(X, axis=0)))
 
 
-def objective(weights, data, **kwargs):
+def objective(weights, X, a, b):
     """
     Objective function to be minimized.
 
-    The objective function embeds the data in 1D space and computes
+    The objective function embeds the data X in 1D space and computes
     on average how well the data is separated into two evenly sized
     clusters located at x=±1.
     """
 
-    embedding = get_embedding(weights, data[:])  # do I need the [:]?
-    discriminant = get_discriminant(embedding, **kwargs)
-    penalty = get_penalty(weights, data)
+    embedding = get_embedding(weights, X[:])  # do I need the [:]?
+    discriminant = get_discriminant(embedding, a, b)
+    penalty = get_penalty(weights, X)
     score = np.mean(discriminant + penalty)
 
     return score

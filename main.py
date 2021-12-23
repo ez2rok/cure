@@ -11,7 +11,7 @@ classes = ['setosa', 'virginica']
 X, y = iris_data(classes)
 
 data = X
-weights, weight_history = minimize_obj(data, record_weight_history=True, random_state=42)
-score = objective(weights, data)
-
-ic(weights, weight_history)
+a, b = 1.1, 2
+weights, weight_history = minimize_obj(data, a, b, record_history=True, random_state=42)
+score = objective(weights, data, a, b)
+ic(score, weights, weight_history.shape)
