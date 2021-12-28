@@ -184,7 +184,7 @@ def save_data(X, y, dir):
     np.save(label_path, y)
 
 
-def fashion_mnist_data(dir, idxs, batch_size=BATCH_SIZE, n_class1=6000, n_class2=2000):
+def get_fashion_mnist_data(dir, idxs, batch_size, n_class1, n_class2):
 
     # download and save the raw data
     print('Downloading the Fashion MNIST data...')
@@ -203,4 +203,22 @@ def fashion_mnist_data(dir, idxs, batch_size=BATCH_SIZE, n_class1=6000, n_class2
     save_data(X, y, dir)
     print('Finished extracting the desired classes.')
 
+    return X, y
+
+
+def fashion_mnist_data(dir, idxs, n_class2, batch_size=BATCH_SIZE, n_class1=6000):
+
+    data_path = '{}/FashionMNIST/processed/data.npy'.format(dir)
+    label_path = '{}/FashionMNIST/processed/labels.npy'.format(dir)
+    max_n_class1 = max_n_class2 = 6000
+
+    if os.path.exists(data_path) and os.path.exists(label_path):
+        X = np.load(data_path)
+        y = np.load(label_path)
+    else:
+        X, y = get_fashion_mnist_data(
+            dir, idxs, batch_size, max_n_class1, max_n_class2)
+
+    X = np.concatenate((X[:n_class1], X[max_n_class1: max_n_class1 + n_class2]), axis=0)
+    y = np.concatenate((y[:n_class1], y[max_n_class1: max_n_class1 + n_class2]), axis=0)
     return X, y

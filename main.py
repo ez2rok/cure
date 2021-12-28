@@ -27,7 +27,6 @@ seed = 42
 
 dir = './data'
 idxs = ['T-Shirt', 'Pullover']
-X, y = fashion_mnist_data(dir, idxs, n_class1=6000, n_class2=6000)
-# X = np.load(os.path.join(dir, 'FashionMNIST/processed/data.npy'))
-# y = np.load(os.path.join(dir, 'FashionMNIST/processed/labels.npy'))
-ic(X.shape, y)
+n_class2 = 1000
+X, y = fashion_mnist_data(dir, idxs, n_class2)
+ic(np.unique(y, return_counts=True))
