@@ -3,34 +3,49 @@ import numpy as np
 from icecream import ic
 
 # import local files
-from objective import objective, get_embedding
+from loss import loss, get_embedding
 
 
 class CURE:
     """
-    CURE clustering
-    """    
+    CURE clustering class.
+    """
 
     def __init__(self, a=1.1, b=2, random_state=None):
         self.a = a
         self.b = b
         self.random_state = random_state
 
-    def fit(self, X, y=None, n_starts=10, record_history=True):      
+    def fit(self, X, y=None, n_starts=10, record_history=False):
         """
-        Minimize the objective function.
+        Minimize the loss function to find the weights that best separate 
+        the data into two clusters.
 
-        ---- Parameters ----
-        X (n_samples, n_features): training data
-        y (n_samples,): training labels. y is not used in this unsupervised function.
-                        It is only used for compatibility with the sklearn API.
-        n_starts (int): number of times to run the optimization, each with a different initial guess
-        record_history (bool): record the weights at every iteration. This is a time
-                              consuming operation so it is not recommended to record but
-                                    may be useful for plotting.
-        random_state (int): random seed for the optimization. Because we are running the minimization
-                            multiple times each with a different initial guess, we use the random state
-                            to generate the n_start seeds that we will use to initialize the weights.
+        Each time we minmize the loss function it is with different initial weights.
+        So we use self.random_state to genreate n_starts different seeds. Each
+        seed seeds a random number generator from which the initial weights
+        are drawn according to a normal distribution.
+
+        Parameters
+        ----------
+        X : (n_samples, n_features) array
+            The data.
+        y : None, optional
+            Ignored. This parameter exists only for compatibility with Pipeline.
+        n_starts : int, optional
+            Number of times to run the optimization, each with a different 
+            initial weights, by default 10.
+        record_history : bool, optional
+            Record the weights at every iteration. This is a time consuming 
+            operation so it is not recommended except for plotting. By default False.
+
+        Returns
+        -------
+        best_weights : (n_features,) array
+            The weights that best minimize the loss function.
+        best_weights_history : (n_iterations, n_features) array
+            The weights at every iteration. If record_history is False, this
+            will be None.
         """
 
         # initial values
@@ -44,14 +59,14 @@ class CURE:
 
         for i in range(n_starts):
 
-            # get weights that best minminimize the objective function
+            # get weights that best minminimize the loss function
             weight_history = []
             weights_0 = np.random.default_rng(seeds[i]).normal(size=X.shape[1])
-            res = minimize(objective, weights_0, args=(X, self.a, self.b),
+            res = minimize(loss, weights_0, args=(X, self.a, self.b),
                            callback=callback)
 
             # if there is a lower score, update the weights
-            score = objective(res.x, X, self.a, self.b)
+            score = loss(res.x, X, self.a, self.b)
             if score < best_score:
                 best_score = score
                 best_weights = res.x
@@ -65,41 +80,47 @@ class CURE:
 
         return best_weights, best_weight_history
 
-    def predict(self, X):
+    def predict(self, X, weights=None):
         """
-        Predict the class of a test sample as a 1 or a 0.
+        Predict the target of all samples of the data as a 1 or a -1.
 
         After computing the weights that best separate the data, embed
         the data in 1D and separate the positive and negative data into
         two different clusters.
 
-        ---- Parameters ----
-        X (n_samples, n_features): training data
-        y_train (n_samples,): training labels
-        kwargs: see minimize_obj
+        Parameters
+        ----------
+        X : (n_samples, n_features) array
+            The data.
+        weights : (n_features,) array, optional
+            The weights used to embed the data in 1D. If None, self.weights
+            are used. By default None.
+
+        Returns
+        -------
+        y_pred : (n_samples,) array
+            The predicted targets for the data.
         """
 
-        threshold = 0
-        embedding = get_embedding(X, self.weights)
-        y_pred = np.where(embedding > threshold, 1, 0)
-
+        weights = self.weights if weights is None else weights
+        y_pred = np.sign(get_embedding(X, weights))
         return y_pred
 
     def fit_predict(self, X, **kwargs):
         """
-        Fit the model and predict the class of a test sample as a 1 or a 0.
+        Fit the model and predict the target of all the samples in the data.
 
-        After computing the weights that best separate the data, embed
-        the data in 1D and separate the positive and negative data into
-        two different clusters.
+        Parameters
+        ----------
+        X : (n_samples, n_features) array
+            The data.
 
-        ---- Parameters ----
-        X (n_samples, n_features): training data
-        y_train (n_samples,): training labels
-        kwargs: see minimize_obj
+        Returns
+        -------
+        y_pred : (n_samples,) array
+            The predicted targets for the data.
         """
 
         self.fit(X, **kwargs)
         y_pred = self.predict(X)
-
         return y_pred
