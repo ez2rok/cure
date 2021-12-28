@@ -1,3 +1,4 @@
 # ignore pycache, vscode files
 **/__pycache__
 .vscode/**
+data/**

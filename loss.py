@@ -179,8 +179,9 @@ def loss(weights, X, a, b):
     Returns
     -------
     score : float
-        A measure of how well the data is separated into two evenly sized
-        clusters located at x=±1. The lower the score, the better.
+        A measure of how well, on average, the data is separated into 
+        two evenly sized clusters located at x=±1. The lower the score,
+        the better.
     """
 
     embedding = get_embedding(weights, X[:])  # do I need the [:]?
