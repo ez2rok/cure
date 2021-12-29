@@ -6,7 +6,7 @@ import os
 import torch
 from icecream import ic
 
-BATCH_SIZE = 2500
+BATCH_SIZE = 10000
 IMG_WIDTH = IMG_HEIGHT = 28
 
 
@@ -43,29 +43,6 @@ def iris_data(classes):
     return X, y
 
 
-def binary_encoding(y):
-    """
-    Encode the target values to binary encoding of -1, 1.
-
-    Parameters
-    ----------
-    y : array (n_samples,)
-        Target values.
-
-    Returns
-    -------
-    [type]
-        [description]
-    """
-
-    assert len(np.unique(y)) == 2, 'y must have only two classes'
-    targets = [-1, 1]
-    mapping = {y_val: target for y_val, target in zip(np.unique(y), targets)}
-    y = np.array([mapping[y_val] for y_val in y])
-
-    return y
-
-
 def download_fashion_mnist(dir, train=True):
 
     os.system('mkdir -p {}'.format(dir))
@@ -97,8 +74,8 @@ def get_mean_std(data, batch_size):
     num_pixels = len(data) * IMG_WIDTH * IMG_HEIGHT
 
     mean = np.sum([batch[0].sum() for batch in loader]) / num_pixels
-    std = np.sum([(batch[0].sum() - mean).pow(2).sum()
-                  for batch in loader]) / num_pixels
+    std = [(batch[0] - mean).pow(2).sum() for batch in loader]
+    std = np.sqrt(np.sum(std) / num_pixels)
 
     return mean, std
 
@@ -128,8 +105,8 @@ def normalize(data, mean, dir, train=True, std=1):
 def get_classes(idxs, train_set, n_class1, n_class2):
 
     # initial values
-    X1 = np.empty((n_class1, IMG_WIDTH, IMG_HEIGHT))
-    X2 = np.empty((n_class2, IMG_WIDTH, IMG_HEIGHT))
+    X1 = np.empty((n_class1, IMG_WIDTH * IMG_HEIGHT))
+    X2 = np.empty((n_class2, IMG_WIDTH * IMG_HEIGHT))
     y1 = np.empty(n_class1)
     y2 = np.empty(n_class2)
 
@@ -158,11 +135,11 @@ def get_classes(idxs, train_set, n_class1, n_class2):
             print("{}/{}".format(i, len(imgs)))
 
         if label == idxs[0] and i1 < n_class1:
-            X1[i1] = img
+            X1[i1] = img.flatten()
             y1[i1] = label
             i1 += 1
         elif label == idxs[1] and i2 < n_class2:
-            X2[i2] = img
+            X2[i2] = img.flatten()
             y2[i2] = label
             i2 += 1
 
@@ -206,19 +183,68 @@ def get_fashion_mnist_data(dir, idxs, batch_size, n_class1, n_class2):
     return X, y
 
 
-def fashion_mnist_data(dir, idxs, n_class2, batch_size=BATCH_SIZE, n_class1=6000):
+def fashion_mnist_data(idxs=['T-Shirt', 'Pullover'], dir='./data', redownload=False,
+                       batch_size=BATCH_SIZE, n_class1=6000, n_class2=6000):
+    """
+    Takes roughly 30 seconds to download, normalize, and extract the data.
+    """
 
     data_path = '{}/FashionMNIST/processed/data.npy'.format(dir)
     label_path = '{}/FashionMNIST/processed/labels.npy'.format(dir)
     max_n_class1 = max_n_class2 = 6000
 
-    if os.path.exists(data_path) and os.path.exists(label_path):
+    if os.path.exists(data_path) and os.path.exists(label_path) and not redownload:
         X = np.load(data_path)
         y = np.load(label_path)
     else:
         X, y = get_fashion_mnist_data(
             dir, idxs, batch_size, max_n_class1, max_n_class2)
 
-    X = np.concatenate((X[:n_class1], X[max_n_class1: max_n_class1 + n_class2]), axis=0)
-    y = np.concatenate((y[:n_class1], y[max_n_class1: max_n_class1 + n_class2]), axis=0)
+    X = np.concatenate(
+        (X[:n_class1], X[max_n_class1: max_n_class1 + n_class2]), axis=0)
+    y = np.concatenate(
+        (y[:n_class1], y[max_n_class1: max_n_class1 + n_class2]), axis=0)
+    return X, y
+
+
+def add_intercept(X):
+    """
+    Adds a column of ones to the data matrix X.
+
+    Parameters
+    ----------
+    X : (n_samples, n_features) array
+        The data.
+
+    Returns
+    -------
+    (n_samples, n_features + 1) array
+        The data matrix X with a column of ones prepended.
+    """
+
+    return np.c_[np.ones(X.shape[0]), X]
+
+def synthetic_elliptical_data(n, d, seed):
+    """
+    Synthetically generate data from an elliptical distribution
+    according to the formula: X_i = mu_0 + mu y_i + sigma * z_i
+    """
+
+    # deterministic values
+    mu_0 = np.full((n, d), 0)
+    mu = np.full((n, d), 2)
+    sigma = 5 * np.eye(d)
+
+    # random values
+    rng = np.random.default_rng(seed)
+    y = rng.choice(np.array([1, -1]), size=n)
+    mean = np.full(d, 0)
+    cov = np.eye(d)
+    z = rng.multivariate_normal(mean, cov, size=(n, d))
+
+    
+    np.einsum('ijk,ikl->ijl', x, y)
+
+    ic(mu_0.shape, mu.shape, sigma.shape, y.shape, z.shape)
+    X = mu_0 + np.outer(mu, y) + sigma * z
     return X, y
