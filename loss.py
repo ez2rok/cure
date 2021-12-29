@@ -66,25 +66,29 @@ def get_discriminant(X_embd, a, b):
     def h_prime1(x): return x * (np.square(x) - 1)
     def h_prime2(x): return 3 * np.square(x) - 1
 
+    # define cases
+    def case1(X):
+        return h(X)
+
+    def case2(X_abs):
+        return case1(a) + h_prime1(a) * (X_abs - a) \
+            + h_prime2(a) * np.power(X_abs - a, 2) / 2 \
+            + h_prime2(a) * np.power(X_abs - a, 3) / (6 * (b - a))
+
+    def case3(X_abs):
+        return case2(b) + (h_prime1(a) + 0.5 * (b - a) * h_prime2(a)) * (X_abs - b)
+
     # case 1: |x| <= a
     idxs = np.where(X_abs <= a)
-    X_result[idxs] = h(X_embd[idxs])
+    X_result[idxs] = case1(X_embd[idxs])
 
     # case 2: a < |x| <= b
     idxs = np.where((a < X_abs) & (X_abs <= b))
-    max_case1 = h(a)
-    X_result[idxs] = max_case1 + h_prime1(a) * (X_abs[idxs] - a) \
-        + h_prime2(a) * np.power(X_abs[idxs] - a, 2) / 2 \
-        + h_prime2(a) * np.power(X_abs[idxs] - a, 3) / (6 * (b - a))
+    X_result[idxs] = case2(X_abs[idxs])
 
     # case 3: |x| > b
     idxs = np.where(X_abs > b)
-    max_case2 = h(a) + h_prime1(a) * (b - a) \
-        + h_prime2(a) * np.power(b - a, 2) / 2 \
-        + h_prime2(a) * np.power(b - a, 3) / (6 * (b - a))
-    X_result[idxs] = max_case2 \
-        + (h_prime1(a) + 0.5 * (b - a) * h_prime2(a)) \
-        * (X_abs[idxs] - b)
+    X_result[idxs] = case3(X_abs[idxs])
 
     return X_result
 
@@ -133,7 +137,7 @@ def get_penalty(weights, X):
     Compute the penalty term.
 
     The penalty term encourages the data X to be evenly split between
-    the two clusters at x=±1. This prevents the objective function 
+    the two clusters at x=±1. This prevents the loss function 
     from achieving the trivial solution of clustering all of the
     data into a single cluster.
 
@@ -156,9 +160,9 @@ def get_penalty(weights, X):
 
 def loss(weights, X, a, b):
     """
-    Objective function to be minimized.
+    Loss function to be minimized.
 
-    The objective function embeds the data X in 1D space and computes
+    The loss function embeds the data X in 1D space and computes
     on average how well the data is separated into two evenly sized
     clusters located at x=±1.
 
