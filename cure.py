@@ -1,5 +1,6 @@
 from scipy.optimize import minimize
 import numpy as np
+from tqdm import tqdm
 from icecream import ic
 
 # import local files
@@ -57,7 +58,7 @@ class CURE:
         rng = np.random.default_rng(self.random_state)
         seeds = rng.integers(0, 2**32, size=n_starts)
 
-        for i in range(n_starts):
+        for i in tqdm(range(n_starts)):
 
             # get weights that best minminimize the loss function
             weight_history = []
