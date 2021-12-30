@@ -226,10 +226,34 @@ def add_intercept(X):
     return np.c_[np.ones(X.shape[0]), X]
 
 
-def synthetic_elliptical_data(n, d, seed, mu_0_val=0, mu_val=[0, 8], sigma_val=1):
+def elliptical_data(n, d, seed=None, mu_0_val=0, mu_val=0, sigma_val=1):
     """
     Synthetically generate data from an elliptical distribution
     according to the formula: X_i = mu_0 + mu y_i + sigma * z_i
+
+    Parameters
+    ----------
+    n : int
+        Number of samples to generate.
+    d : int
+        Dimension of the data.
+    seed : int, optional
+        Random seed, by default None.
+    mu_0_val : float or (d,) array, optional
+        If float, mu_0 is a vector with all elements equal to mu_0_val. If mu_0_val, is
+        an array, mu_0 is assigned the value of mu_0_val, by default 0.
+    mu_val : float or (d,) array, optional
+        If float, mu is a vector with all elements equal to mu_val. If mu_val, is
+        an array, mu is assigned the value of mu_val, by default 0.
+    sigma_val : float, optional
+        A value used to create the covariance matrix, by default 1.
+
+    Returns
+    -------
+    X : (n, d) array
+        The elliptically distributed data.
+    y : (n,) array
+        The labels for the data.
     """
 
     # deterministic values
@@ -245,36 +269,49 @@ def synthetic_elliptical_data(n, d, seed, mu_0_val=0, mu_val=[0, 8], sigma_val=1
     z = rng.multivariate_normal(mean, cov, size=n)[:, :, np.newaxis]
 
     # compute X with vectorized operations
-    X = mu_0 + np.outer(y, mu) + np.einsum('ijk,ikl->ijl',
-                                           np.sqrt(sigma), z).squeeze()
+    X = mu_0 + np.outer(y, mu) \
+        + np.einsum('ijk,ikl->ijl', np.sqrt(sigma), z).squeeze()
 
-    params = {
-        'mu_0': mu_0_val,
-        'mu': mu_val,
-        'sigma': sigma_val,
-        'z': {'mean': mean, 'cov': cov},
-    }
-
-    return X, y, params
+    return X, y
 
 
-def plot_elliptical_data(X, y, params, outdir='figures/elliptical_data.png'):
+def plot_data(X, y, title=None, filename='data', outdir='./figures/', save=False):
     """
-    Plot the data from the elliptical distribution.
+    Plot the data from the elliptical distribution. Each class is plotted in a different color.
+
+    Parameters
+    ----------
+    X : (n_samples, n_features) array
+        The data.
+    y : (n_samples,) array
+        The labels for the data.
+    title : str, optional
+        The title of the figure, by default None.
+    filename : str, optional
+        The name of the file that we are saving this figure in, by default 'data'.
+    outdir : str, optional
+        The name of the directory that we are saving this figure in, by default './figures/'.
+    save : bool, optional
+        If true, save this figure, by default False.
+
+    Returns
+    -------
+    matplotlib.figure.Figure
+        A figure that plots each class of the data in a different color.
     """
 
     # plot the data
     fig, ax = plt.subplots(figsize=(10, 5))
     for y_i in np.unique(y):
-        ax.scatter(X[y == y_i, 0], X[y == y_i, 1], label=y_i, s=10)
+        ax.scatter(X[y == y_i, 0], X[y == y_i, 1], label='Class {}'.format(y_i), s=10)
 
     # format the data
-    limit = np.max(np.abs(X))
-    title = 'Synthetic Elliptical Data'
+    limit = np.max(np.abs(X)) * 1.03
     ax.set(xlabel='x', ylabel='y', title=title,
            xlim=(-limit, limit), ylim=(-limit, limit))
     plt.legend()
 
     # save the data
-    fig.savefig(outdir)
+    if save:
+        fig.savefig(outdir + filename + '.png')
     return fig

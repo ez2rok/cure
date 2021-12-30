@@ -17,28 +17,66 @@ import pandas as pd
 
 
 # import local files
-from make_dataset import iris_data, fashion_mnist_data, add_intercept, synthetic_elliptical_data
+from make_dataset import iris_data, fashion_mnist_data, elliptical_data, plot_data
 from cure import CURE
 import evaluate as eval
 
 
 def get_subset(X, y, subset_size1, subset_size2):
-        """
-        Exctract subset_size1 datapoints from class1 and subset_size2 datapoints 
-        from class2 of X and y.
-        """
+    """
+    Exctract subset_size1 datapoints from class1 and subset_size2 datapoints 
+    from class2 of X and y.
+    """
 
-        idxs1 = np.argwhere(y == -1)[:subset_size1]
-        idxs2 = np.argwhere(y == 1)[:subset_size2]
-        X = np.concatenate((X[idxs1], X[idxs2])).squeeze()
-        y = np.concatenate((y[idxs1], y[idxs2])).squeeze()
-        return X, y
+    idxs1 = np.argwhere(y == -1)[:subset_size1]
+    idxs2 = np.argwhere(y == 1)[:subset_size2]
+    X = np.concatenate((X[idxs1], X[idxs2])).squeeze()
+    y = np.concatenate((y[idxs1], y[idxs2])).squeeze()
+    return X, y
+
+
+def experiment0():
+    # get data
+    seed = 42
+    n = 1000
+    d = 2
+    X, y = elliptical_data(n, d, seed=42, mu_val=[0, 4], sigma_val=5)
+
+    # run cure
+    cure = CURE(random_state=seed)
+    weight_hist = cure.fit(X)[1]
+    y_pred = cure.predict(X)
+
+    plot_data(X, y, title='Elliptical Data', save=True)
+
 
 def experiment1(save=False):
     """
     Compare the performance of CURE and many other clustering algorithms on various datasets.
+    The clustering algorithms are: 
+        CURE
+        KMeans
+        Meanshift
+        Spectral clustering
+        Ward
+        Agglomerative Clustering
+        DBSCAN
+        OPTICS
+        BIRCH
+        Gaussian Mixture
+
     Much of this code is taken form the sklearn tutorial here.
     https://scikit-learn.org/stable/auto_examples/cluster/plot_cluster_comparison.html#sphx-glr-auto-examples-cluster-plot-cluster-comparison-py
+
+    Parameters
+    ----------
+    save : bool, optional
+        If true, save the figure, by default False.
+
+    Returns
+    -------
+    [type]
+        [description]
     """
 
     np.random.seed(0)
@@ -90,7 +128,7 @@ def experiment1(save=False):
         "min_cluster_size": 0.1,
     }
 
-    datasets = [
+    datasets_ = [
         (
             noisy_circles,
             {
@@ -127,7 +165,7 @@ def experiment1(save=False):
         (no_structure, {})
     ]
 
-    for i_dataset, (dataset, algo_params) in enumerate(datasets):
+    for i_dataset, (dataset, algo_params) in enumerate(datasets_):
         # update parameters with dataset-specific values
         params = default_base.copy()
         params.update(algo_params)
@@ -217,7 +255,7 @@ def experiment1(save=False):
             else:
                 y_pred = algorithm.predict(X)
 
-            plt.subplot(len(datasets), len(clustering_algorithms), plot_num)
+            plt.subplot(len(datasets_), len(clustering_algorithms), plot_num)
             if i_dataset == 0:
                 plt.title(name, size=18)
 
@@ -245,6 +283,11 @@ def experiment1(save=False):
             colors = np.append(colors, ["#000000"])
             plt.scatter(X[:, 0], X[:, 1], s=10, color=colors[np.where(
                 y_pred == -1, 0, y_pred).astype(int)])
+            name = algorithm.__class__.__name__
+
+            text = ("%.2fs" % (t1 - t0)).lstrip("0")
+            text += '' if y is None else "\nARI={:.3f}".format(
+                eval.adjusted_rand(y, y_pred)).lstrip("0")
 
             plt.xlim(-2.5, 2.5)
             plt.ylim(-2.5, 2.5)
@@ -253,7 +296,7 @@ def experiment1(save=False):
             plt.text(
                 0.99,
                 0.01,
-                ("%.2fs" % (t1 - t0)).lstrip("0"),
+                text,
                 transform=plt.gca().transAxes,
                 size=15,
                 horizontalalignment="right",
@@ -267,10 +310,22 @@ def experiment1(save=False):
 
 
 def experiment2():
+    
+    def get_subset(X, y, subset_size1, subset_size2):
+        """
+        Exctract subset_size1 datapoints from class1 and subset_size2 datapoints 
+        from class2 of X and y.
+        """
 
-    def get_results(seed, n, d):
-        X, y = synthetic_elliptical_data(
-            n, d, seed, mu_val=[0, 4], sigma_val=5)[:2]
+        idxs1 = np.argwhere(y == -1)[:subset_size1]
+        idxs2 = np.argwhere(y == 1)[:subset_size2]
+        X = np.concatenate((X[idxs1], X[idxs2])).squeeze()
+        y = np.concatenate((y[idxs1], y[idxs2])).squeeze()
+        return X, y
+
+    def get_results(seed, n, d, metric):
+        X, y = elliptical_data(
+            n, d, seed, mu_val=[0, 4], sigma_val=5)
 
         subset_size1 = 600
         subset_size2s = [600 // i for i in range(1, 5)]
@@ -289,42 +344,57 @@ def experiment2():
 
                 clf.fit(X_train)
                 y_pred = clf.predict(X_test)
-                misclf = eval.misclassification_rate(y_test, y_pred)
-                result.append(misclf)
+                score = metric(y_test, y_pred)
+                result.append(score)
             results.append(result)
 
         return results
 
-     # initial values
+    # initial values
     n = 1300
     d = 2
     n_trials = 5
     seeds = [i for i in range(n_trials)]
 
-    results = np.array([get_results(seed, n, d) for seed in seeds])
-    means = np.mean(results, axis=0)
-    stds = np.std(results, axis=0)
+    # Adjusted Rand Index (ARI)
+    ari_results = np.array([get_results(seed, n, d, eval.adjusted_rand) for seed in seeds])
+    ari_means = np.mean(ari_results, axis=0)
+    ari_stds = np.std(ari_results, axis=0)
 
-    text = [['{:.1f} ± {:.1f}%'.format(m * 100, s * 100) for m, s in zip(m_s, s_s)]
-            for m_s, s_s in zip(means, stds)]
-    
+    ari_text = [['{:.3f} ± {:.3f}'.format(m, s).lstrip('0') for m, s in zip(m_s, s_s)]
+            for m_s, s_s in zip(ari_means, ari_stds)]
+
     ratios = ['{} : 1'.format(i) for i in range(1, 5)]
-    clfs = ['KMeans', 'CURE']
-    df = pd.DataFrame(text, index=clfs, columns=ratios)
-    
-    return df
+    clfs = ['KMeans ARI', 'CURE ARI']
+    df_ari = pd.DataFrame(ari_text, index=clfs, columns=ratios)
 
-# initial values
-seed = 420
+    # misclassification rate
+    mclf_results = np.array([get_results(seed, n, d, eval.misclassification_rate) for seed in seeds])
+    mclf_means = np.mean(mclf_results, axis=0)
+    mclf_stds = np.std(mclf_results, axis=0)
 
-#get data
-classes = [2, 1]
-X, y = iris_data(classes)
-X_train, X_test, y_train, y_test = tts(X, y, random_state=seed)
+    mclf_text = [['{:.1f} ± {:.1f}%'.format(m * 100, s * 100) for m, s in zip(m_s, s_s)]
+            for m_s, s_s in zip(mclf_means, mclf_stds)]
+
+    ratios = ['{} : 1'.format(i) for i in range(1, 5)]
+    clfs = ['KMeans MisClf', 'CURE MisClf']
+    df_mclf = pd.DataFrame(mclf_text, index=clfs, columns=ratios)
+
+    X, y = elliptical_data(n, d, seeds[0], mu_val=[0, 4], sigma_val=5)
+    return df_ari, df_mclf, X, y
 
 
+def experiment3():
+
+    # get data
+    seed = 420
+    classes = [2, 1]
+    X, y = iris_data(classes)
+    X_train, X_test, y_train, y_test = tts(X, y, random_state=seed)
+    ic(X_train.shape)
 
 
 if __name__ == '__main__':
-    # experiment1()
-    experiment2()
+    # experiment1(save=True)
+    # experiment2()
+    experiment3()

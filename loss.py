@@ -93,7 +93,7 @@ def get_discriminant(X_embd, a, b):
     return X_result
 
 
-def plot_discriminant(outdir):
+def plot_discriminant(outdir='./figures', save=False):
     """
     Plot the discriminant functions f() and h().
 
@@ -127,7 +127,8 @@ def plot_discriminant(outdir):
     ax.legend()
 
     # save figure
-    fig.savefig(outdir + '/discriminant.png')
+    if save:
+        fig.savefig(outdir + '/discriminant.png')
 
     return fig
 
@@ -188,8 +189,8 @@ def loss(weights, X, a, b):
         the better.
     """
 
-    embedding = get_embedding(weights, X[:])  # do I need the [:]?
-    discriminant = get_discriminant(embedding, a, b)
+    X_embd = get_embedding(weights, X[:])  # do I need the [:]?
+    discriminant = get_discriminant(X_embd, a, b)
     penalty = get_penalty(weights, X)
     score = np.mean(discriminant + penalty)
 
