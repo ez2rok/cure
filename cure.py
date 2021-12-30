@@ -11,28 +11,10 @@ class CURE:
     CURE clustering class.
     """
 
-    def __init__(self, a=1.1, b=2, random_state=None, intercept=True):
+    def __init__(self, a=1.1, b=2, random_state=None):
         self.a = a
         self.b = b
         self.random_state = random_state
-        self.intercept = intercept
-
-    def add_intercept(self, X):
-        """
-        Adds a column of ones to the data matrix X.
-
-        Parameters
-        ----------
-        X : (n_samples, n_features) array
-            The data.
-
-        Returns
-        -------
-        (n_samples, n_features + 1) array
-            The data matrix X with a column of ones prepended.
-        """
-
-        return np.c_[np.ones(X.shape[0]), X]
 
     def fit(self, X, y=None, n_starts=3, record_history=False):
         """
@@ -74,7 +56,6 @@ class CURE:
             if record_history else None
         rng = np.random.default_rng(self.random_state)
         seeds = rng.integers(0, 2**32, size=n_starts)
-        X = self.add_intercept(X) if self.intercept else X
 
         for i in range(n_starts):
 
@@ -121,7 +102,6 @@ class CURE:
             The predicted targets for the data.
         """
 
-        X = self.add_intercept(X) if self.intercept else X
         weights = self.weights if weights is None else weights
         y_pred = np.sign(get_embedding(X, weights))
         return y_pred
