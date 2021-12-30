@@ -17,9 +17,9 @@ import pandas as pd
 
 
 # import local files
-from make_dataset import iris_data, fashion_mnist_data, elliptical_data, plot_data
+from make_dataset import iris_data, fashion_mnist_data, elliptical_data, plot_data, add_intercept
 from cure import CURE
-import evaluate as eval
+from evaluate import adjusted_rand, misclassification_rate
 
 
 def get_subset(X, y, subset_size1, subset_size2):
@@ -35,22 +35,40 @@ def get_subset(X, y, subset_size1, subset_size2):
     return X, y
 
 
-def experiment0():
+def experiment1():
+
     # get data
     seed = 42
     n = 1000
     d = 2
     X, y = elliptical_data(n, d, seed=42, mu_val=[0, 4], sigma_val=5)
+    X = add_intercept(X)
 
     # run cure
     cure = CURE(random_state=seed)
-    weight_hist = cure.fit(X)[1]
-    y_pred = cure.predict(X)
+    y_pred = cure.fit_predict(X)
 
-    plot_data(X, y, title='Elliptical Data', save=True)
+    # plot it
+    true_clustering = plot_data(X, y, title='True Clustering')
+    predicted_clustering = plot_data(
+        X, y, title='Predicted Clustering via CURE')
+
+    # evaluate predictions
+    adj_rand = adjusted_rand(y, y_pred)
+    misclf = misclassification_rate(y, y_pred)
+    print('Adjusted Rand Index = {:.3f}\nMisclassification Rate = {:.3f}%'.format(
+        adj_rand, misclf * 100))
+
+    # assert satements to verify everything is working
+    adj_rand_true = 0.9840480393607277
+    misclf_true = 0.00400000000000000
+    np.testing.assert_allclose(
+        adj_rand, adj_rand_true, err_msg='Adjusted Rand Index is incorrect. You done goofed!')
+    np.testing.assert_allclose(
+        misclf, misclf_true, err_msg='Misclassification Rate is incorrect. You done goofed!')
 
 
-def experiment1(save=False):
+def experiment2(save=False):
     """
     Compare the performance of CURE and many other clustering algorithms on various datasets.
     The clustering algorithms are: 
@@ -247,13 +265,13 @@ def experiment1(save=False):
                     + " may not work as expected.",
                     category=UserWarning,
                 )
-                algorithm.fit(X)
+                algorithm.fit(add_intercept(X), y) if name == 'CURE' else algorithm.fit(X)
 
             t1 = time.time()
             if hasattr(algorithm, "labels_"):
                 y_pred = algorithm.labels_.astype(int)
             else:
-                y_pred = algorithm.predict(X)
+                y_pred = algorithm.predict(add_intercept(X)) if name == 'CURE' else algorithm.predict(X)
 
             plt.subplot(len(datasets_), len(clustering_algorithms), plot_num)
             if i_dataset == 0:
@@ -287,7 +305,7 @@ def experiment1(save=False):
 
             text = ("%.2fs" % (t1 - t0)).lstrip("0")
             text += '' if y is None else "\nARI={:.3f}".format(
-                eval.adjusted_rand(y, y_pred)).lstrip("0")
+                adjusted_rand(y, y_pred)).lstrip("0")
 
             plt.xlim(-2.5, 2.5)
             plt.ylim(-2.5, 2.5)
@@ -309,8 +327,8 @@ def experiment1(save=False):
     return fig
 
 
-def experiment2():
-    
+def experiment3():
+
     def get_subset(X, y, subset_size1, subset_size2):
         """
         Exctract subset_size1 datapoints from class1 and subset_size2 datapoints 
@@ -326,6 +344,7 @@ def experiment2():
     def get_results(seed, n, d, metric):
         X, y = elliptical_data(
             n, d, seed, mu_val=[0, 4], sigma_val=5)
+        X = add_intercept(X)
 
         subset_size1 = 600
         subset_size2s = [600 // i for i in range(1, 5)]
@@ -357,24 +376,26 @@ def experiment2():
     seeds = [i for i in range(n_trials)]
 
     # Adjusted Rand Index (ARI)
-    ari_results = np.array([get_results(seed, n, d, eval.adjusted_rand) for seed in seeds])
+    ari_results = np.array(
+        [get_results(seed, n, d, adjusted_rand) for seed in seeds])
     ari_means = np.mean(ari_results, axis=0)
     ari_stds = np.std(ari_results, axis=0)
 
     ari_text = [['{:.3f} ± {:.3f}'.format(m, s).lstrip('0') for m, s in zip(m_s, s_s)]
-            for m_s, s_s in zip(ari_means, ari_stds)]
+                for m_s, s_s in zip(ari_means, ari_stds)]
 
     ratios = ['{} : 1'.format(i) for i in range(1, 5)]
     clfs = ['KMeans ARI', 'CURE ARI']
     df_ari = pd.DataFrame(ari_text, index=clfs, columns=ratios)
 
     # misclassification rate
-    mclf_results = np.array([get_results(seed, n, d, eval.misclassification_rate) for seed in seeds])
+    mclf_results = np.array(
+        [get_results(seed, n, d, misclassification_rate) for seed in seeds])
     mclf_means = np.mean(mclf_results, axis=0)
     mclf_stds = np.std(mclf_results, axis=0)
 
     mclf_text = [['{:.1f} ± {:.1f}%'.format(m * 100, s * 100) for m, s in zip(m_s, s_s)]
-            for m_s, s_s in zip(mclf_means, mclf_stds)]
+                 for m_s, s_s in zip(mclf_means, mclf_stds)]
 
     ratios = ['{} : 1'.format(i) for i in range(1, 5)]
     clfs = ['KMeans MisClf', 'CURE MisClf']
@@ -384,17 +405,26 @@ def experiment2():
     return df_ari, df_mclf, X, y
 
 
-def experiment3():
+def experiment4():
+
+    from loss import get_embedding
 
     # get data
     seed = 420
     classes = [2, 1]
     X, y = iris_data(classes)
+    X = add_intercept(X)
     X_train, X_test, y_train, y_test = tts(X, y, random_state=seed)
-    ic(X_train.shape)
+
+    # run cure
+    cure = CURE(random_state=seed)
+    weight_history = cure.fit(X_train, record_history=True)[-1]
+    embedding_history = get_embedding(weight_history, X_train)
+    ic(weight_history.shape, embedding_history.shape)
 
 
 if __name__ == '__main__':
-    # experiment1(save=True)
-    # experiment2()
-    experiment3()
+    # experiment1()
+    # experiment2(save=True)
+    # experiment3()
+    experiment4()
