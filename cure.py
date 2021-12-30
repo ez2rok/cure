@@ -1,6 +1,5 @@
 from scipy.optimize import minimize
 import numpy as np
-from tqdm import tqdm
 from icecream import ic
 
 # import local files
@@ -12,12 +11,30 @@ class CURE:
     CURE clustering class.
     """
 
-    def __init__(self, a=1.1, b=2, random_state=None):
+    def __init__(self, a=1.1, b=2, random_state=None, intercept=True):
         self.a = a
         self.b = b
         self.random_state = random_state
+        self.intercept = intercept
 
-    def fit(self, X, y=None, n_starts=10, record_history=False):
+    def add_intercept(self, X):
+        """
+        Adds a column of ones to the data matrix X.
+
+        Parameters
+        ----------
+        X : (n_samples, n_features) array
+            The data.
+
+        Returns
+        -------
+        (n_samples, n_features + 1) array
+            The data matrix X with a column of ones prepended.
+        """
+
+        return np.c_[np.ones(X.shape[0]), X]
+
+    def fit(self, X, y=None, n_starts=3, record_history=False):
         """
         Minimize the loss function to find the weights that best separate 
         the data into two clusters.
@@ -35,7 +52,7 @@ class CURE:
             Ignored. This parameter exists only for compatibility with Pipeline.
         n_starts : int, optional
             Number of times to run the optimization, each with a different 
-            initial weights, by default 10.
+            initial weights, by default 3.
         record_history : bool, optional
             Record the weights at every iteration. This is a time consuming 
             operation so it is not recommended except for plotting. By default False.
@@ -57,8 +74,9 @@ class CURE:
             if record_history else None
         rng = np.random.default_rng(self.random_state)
         seeds = rng.integers(0, 2**32, size=n_starts)
+        X = self.add_intercept(X) if self.intercept else X
 
-        for i in tqdm(range(n_starts)):
+        for i in range(n_starts):
 
             # get weights that best minminimize the loss function
             weight_history = []
@@ -103,6 +121,7 @@ class CURE:
             The predicted targets for the data.
         """
 
+        X = self.add_intercept(X) if self.intercept else X
         weights = self.weights if weights is None else weights
         y_pred = np.sign(get_embedding(X, weights))
         return y_pred

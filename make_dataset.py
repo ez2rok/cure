@@ -5,6 +5,7 @@ from torch.utils.data import DataLoader
 import os
 import torch
 from icecream import ic
+import matplotlib.pyplot as plt
 
 BATCH_SIZE = 10000
 IMG_WIDTH = IMG_HEIGHT = 28
@@ -224,27 +225,56 @@ def add_intercept(X):
 
     return np.c_[np.ones(X.shape[0]), X]
 
-def synthetic_elliptical_data(n, d, seed):
+
+def synthetic_elliptical_data(n, d, seed, mu_0_val=0, mu_val=[0, 8], sigma_val=1):
     """
     Synthetically generate data from an elliptical distribution
     according to the formula: X_i = mu_0 + mu y_i + sigma * z_i
     """
 
     # deterministic values
-    mu_0 = np.full((n, d), 0)
-    mu = np.full((n, d), 2)
-    sigma = 5 * np.eye(d)
+    mu_0 = np.full((n, d), mu_0_val)
+    mu = np.full(d, mu_val)
+    sigma = np.full((n, d, d), sigma_val * np.eye(d))
 
     # random values
     rng = np.random.default_rng(seed)
     y = rng.choice(np.array([1, -1]), size=n)
     mean = np.full(d, 0)
-    cov = np.eye(d)
-    z = rng.multivariate_normal(mean, cov, size=(n, d))
+    cov = np.eye(d) * [10, 0.5]
+    z = rng.multivariate_normal(mean, cov, size=n)[:, :, np.newaxis]
 
-    
-    np.einsum('ijk,ikl->ijl', x, y)
+    # compute X with vectorized operations
+    X = mu_0 + np.outer(y, mu) + np.einsum('ijk,ikl->ijl',
+                                           np.sqrt(sigma), z).squeeze()
 
-    ic(mu_0.shape, mu.shape, sigma.shape, y.shape, z.shape)
-    X = mu_0 + np.outer(mu, y) + sigma * z
-    return X, y
+    params = {
+        'mu_0': mu_0_val,
+        'mu': mu_val,
+        'sigma': sigma_val,
+        'z': {'mean': mean, 'cov': cov},
+    }
+
+    return X, y, params
+
+
+def plot_elliptical_data(X, y, params, outdir='figures/elliptical_data.png'):
+    """
+    Plot the data from the elliptical distribution.
+    """
+
+    # plot the data
+    fig, ax = plt.subplots(figsize=(10, 5))
+    for y_i in np.unique(y):
+        ax.scatter(X[y == y_i, 0], X[y == y_i, 1], label=y_i, s=10)
+
+    # format the data
+    limit = np.max(np.abs(X))
+    title = 'Synthetic Elliptical Data'
+    ax.set(xlabel='x', ylabel='y', title=title,
+           xlim=(-limit, limit), ylim=(-limit, limit))
+    plt.legend()
+
+    # save the data
+    fig.savefig(outdir)
+    return fig
