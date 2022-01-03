@@ -4,22 +4,21 @@ import warnings
 
 import numpy as np
 import matplotlib.pyplot as plt
+import pandas as pd
 
 from sklearn import cluster, datasets, mixture
 from sklearn.neighbors import kneighbors_graph
 from sklearn.preprocessing import StandardScaler
 from itertools import cycle, islice
-
-# experiment2
-from icecream import ic
 from sklearn.model_selection import train_test_split as tts
-import pandas as pd
-
+from icecream import ic
 
 # import local files
-from make_dataset import iris_data, fashion_mnist_data, elliptical_data, plot_data, add_intercept
+from make_dataset import iris_data, elliptical_data, plot_data, add_intercept
 from cure import CURE
 from evaluate import adjusted_rand, misclassification_rate
+from loss import get_embedding
+from visualize import matplotlib_animation
 
 
 def get_subset(X, y, subset_size1, subset_size2):
@@ -407,8 +406,6 @@ def experiment3():
 
 def experiment4():
 
-    from loss import get_embedding
-
     # get data
     seed = 420
     classes = [2, 1]
@@ -420,8 +417,10 @@ def experiment4():
     cure = CURE(random_state=seed)
     weight_history = cure.fit(X_train, record_history=True)[-1]
     embedding_history = get_embedding(weight_history, X_train)
-    ic(weight_history.shape, embedding_history.shape)
+    X_embd = embedding_history[-1]
 
+
+    matplotlib_animation(embedding_history, y_train, labels=['Flower 1', 'Flower 2'])
 
 if __name__ == '__main__':
     # experiment1()
