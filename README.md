@@ -6,3 +6,5 @@ Implement the clustering algorithm Clustering  via  Uncoupled  REgression (CURE)
 <video width="320" height="240" controls>
   <source src="/figures/cure.mp4" type="video/mp4">
 </video>
+
+https://github.com/ez2rok/cure/blob/master/figures/cure.mp4
