@@ -3,7 +3,7 @@ import numpy as np
 from icecream import ic
 
 # import local files
-from loss import loss, get_embedding
+from .loss import loss, get_embedding
 
 
 class CURE:

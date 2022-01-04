@@ -14,11 +14,11 @@ from sklearn.model_selection import train_test_split as tts
 from icecream import ic
 
 # import local files
-from make_dataset import iris_data, elliptical_data, plot_data, add_intercept
-from cure import CURE
-from evaluate import adjusted_rand, misclassification_rate
-from loss import get_embedding
-from visualize import matplotlib_animation
+from src.data.make_dataset import iris_data, elliptical_data, add_intercept
+from src.models.cure import CURE
+from src.models.evaluate import adjusted_rand, misclassification_rate
+from src.models.loss import get_embedding
+from src.visualization.visualize import matplotlib_animation, plot_data
 
 
 def get_subset(X, y, subset_size1, subset_size2):
@@ -419,8 +419,9 @@ def experiment4():
     embedding_history = get_embedding(weight_history, X_train)
     X_embd = embedding_history[-1]
 
-
+    # animate cure
     matplotlib_animation(embedding_history, y_train, labels=['Flower 1', 'Flower 2'])
+
 
 if __name__ == '__main__':
     # experiment1()
