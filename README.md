@@ -4,5 +4,5 @@ Implement the clustering algorithm Clustering  via  Uncoupled  REgression (CURE)
 ![CURE Animation](/figures/cure.mp4)
 
 <video width="320" height="240" controls>
-  <source src="./figures/cure.mp4" type="video/mp4">
+  <source src="/figures/cure.mp4" type="video/mp4">
 </video>
