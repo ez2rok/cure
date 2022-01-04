@@ -5,11 +5,10 @@ import plotly.express as px
 import numpy as np
 import pandas as pd
 
-from icecream import ic
 from matplotlib import animation
 
 
-def plot_data(X, y, title=None, labels=None, filename='data', outdir='./figures', save=False):
+def plot_data(X, y, file, title=None, labels=None, save=False):
     """
     Plot 2D data. Each class is plotted in a different color.
 
@@ -19,14 +18,12 @@ def plot_data(X, y, title=None, labels=None, filename='data', outdir='./figures'
         The data.
     y : (n_samples,) array
         The labels for the data.
+    file : file, str, or pathlib.Path
+        File or filename to which the data is saved. Should end with '.png'.
     title : str, optional
         The title of the figure, by default None.
     labels : list of str, optional
         The labels for the classes, by default None.
-    filename : str, optional
-        The name of the file that we are saving this figure in, by default 'data'.
-    outdir : str, optional
-        The name of the directory that we are saving this figure in, by default './figures/'.
     save : bool, optional
         If true, save this figure, by default False.
 
@@ -50,48 +47,11 @@ def plot_data(X, y, title=None, labels=None, filename='data', outdir='./figures'
 
     # save the data
     if save:
-        fig.savefig(outdir + '/' + filename + '.png')
+        fig.savefig(file)
     return fig
 
 
-###############################################################################
-# Plotly Animation
-###############################################################################
-
-
-def plotly_animation(embedding_history, y, n_bins=20):
-
-    # initial values
-    n_iterations = embedding_history.shape[0]
-    n_samples = embedding_history.shape[1]
-
-    # make dataframe
-    data = {'Data Embedding': embedding_history.flatten(),
-            'iteration': np.repeat(np.arange(n_samples), n_iterations),
-            'label': np.tile(y, n_iterations)}
-    df = pd.DataFrame(data)
-
-    # make animation
-    fig = px.histogram(df, x='Data Embedding', color='label', n_bins=n_bins,
-                       range_x=[np.min(embedding_history),
-                                np.max(embedding_history)],
-                       animation_frame='iteration', title='CURE Data Embedding')
-    fig.add_vline(x=0, line_width=3, line_dash="dash")
-
-    # change speed of animation in milliseconds
-    fig.layout.updatemenus[0].buttons[0].args[1]['frame']['duration'] = 1
-    fig.layout.updatemenus[0].buttons[0].args[1]['transition']['duration'] = 1
-
-    # save animation
-    plotly.offline.plot(fig, filename='figures/fig1.html')
-
-
-###############################################################################
-# Matplotlib Animation
-###############################################################################
-
-
-def get_axis_limits(embedding_history, y, n_bins):
+def get_axis_limits(embedding_history, y, n_bins, padding=1.2):
     """
     Get the lower and upper limits of the x, y axes.
 
@@ -103,6 +63,9 @@ def get_axis_limits(embedding_history, y, n_bins):
         The labels for the data.
     n_bins : int, optional
         Number of bins in the histogram.
+    padding : float, optional
+        The padding between the axes and the data, by default 1.2. This ensures
+        that the data is not cut off.
 
     Returns
     -------
@@ -122,13 +85,13 @@ def get_axis_limits(embedding_history, y, n_bins):
     x_lower = np.min(embedding_history)
     x_upper = np.max(embedding_history)
 
-    limits = np.array([y_lower, y_upper, x_lower, x_upper])
+    limits = np.array([y_lower, y_upper, x_lower, x_upper]) * padding
     return limits
 
 
 def update_figure(frame_number, embedding_history, y, ax, n_bins, limits, labels):
     """
-    Update the figure at each frame.
+    Update the figure at each frame for the matplotlib animation.
 
     Parameters
     ----------
@@ -157,8 +120,7 @@ def update_figure(frame_number, embedding_history, y, ax, n_bins, limits, labels
     ax.hist(data, bins=n_bins, stacked=True, label=labels)
 
     # format new histogram
-    padding = 1.1
-    y_lower, y_upper, x_lower, x_upper = limits * padding
+    y_lower, y_upper, x_lower, x_upper = limits
     ax.set(xlim=(x_lower, x_upper),
            ylim=(y_lower, y_upper),
            title='CURE Data Embedding',
@@ -168,7 +130,7 @@ def update_figure(frame_number, embedding_history, y, ax, n_bins, limits, labels
     ax.legend()
 
 
-def matplotlib_animation(embedding_history, y, outdir='./figures', filename='cure', labels=None, n_bins=20):
+def matplotlib_animation(embedding_history, y, file, labels=None, n_bins=20):
     """
     Create an animation of the data embedding changing over time as the weights change in the CURE algorithm.
     Use matplotlib.
@@ -179,10 +141,8 @@ def matplotlib_animation(embedding_history, y, outdir='./figures', filename='cur
         The data embedding at each iteration. Each row is the data embedded with a different set of weights.
     y : (n_samples,) array
         The labels for the data.
-    outdir : str, optional
-        The animation in saved in a directory with this name, by default './figures'.
-    filename : str, optional
-        The animation in saved in a file with this name, by default 'cure'.
+    file : file, str, or pathlib.Path
+        File or filename to which the data is saved. Should end with '.mp4'.
     labels : list of str, optional
         The unique class name that each (numeric) label corresponds to, by default None.
     n_bins : int, optional
@@ -208,5 +168,65 @@ def matplotlib_animation(embedding_history, y, outdir='./figures', filename='cur
                                    interval=500,
                                    repeat_delay=2000
                                    )
-    anim.save(outdir + '/' + filename + '.mp4', writer='ffmpeg')
+    anim.save(file, writer='ffmpeg')
     return anim
+
+
+def plotly_animation(embedding_history, y, file, labels=None, n_bins=20):
+    """
+    Create an animation of the data embedding changing over time as the weights change in the CURE algorithm.
+    Use plotly.
+
+    Parameters
+    ----------
+    embedding_history : (n_iterations, n_samples) array
+        The data embedding at each iteration. Each row is the data embedded with a different set of weights.
+    y : (n_samples,) array
+        The labels for the data.
+    file : file, str, or pathlib.Path
+        File or filename to which the data is saved. Should end with '.html'.
+    labels : list of str, optional
+        The unique class name that each (numeric) label corresponds to, by default None.
+    n_bins : int, optional
+        Number of bins in the histogram, by default 20.
+
+    Returns
+    -------
+    plotly.graph_objects.Figure
+        The animation of the data embedding changing over time as the weights change.
+    """
+
+    # initial values
+    n_iterations = embedding_history.shape[0]
+    n_samples = embedding_history.shape[1]
+    y_lower, y_upper, x_lower, x_upper = get_axis_limits(
+        embedding_history, y, n_bins)
+
+    # make dataframe
+    if labels:
+        mapping = {y_val: label for y_val, label in zip(np.unique(y), labels)}
+        y = [mapping[y_val] for y_val in y]
+    data = {'Data Embedding': embedding_history.flatten(),
+            'iteration': np.repeat(np.arange(n_samples), n_iterations),
+            'class': np.tile(y, n_iterations)}
+    df = pd.DataFrame(data)
+
+    # make animation
+    fig = px.histogram(df,
+                       x='Data Embedding',
+                       color='class',
+                       nbins=n_bins,
+                       range_x=[x_lower, x_upper],
+                       range_y=[y_lower, y_upper],
+                       animation_frame='iteration',
+                       title='CURE Data Embedding',
+                       labels=labels)
+    fig.add_vline(x=0, line_width=3, line_dash="dash")
+
+    # change speed of animation in milliseconds
+    fig.layout.updatemenus[0].buttons[0].args[1]['frame']['duration'] = 1
+    fig.layout.updatemenus[0].buttons[0].args[1]['transition']['duration'] = 1
+
+    # save animation
+    plotly.offline.plot(fig, filename=file)
+    return fig

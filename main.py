@@ -18,7 +18,7 @@ from src.data.make_dataset import iris_data, elliptical_data, add_intercept
 from src.models.cure import CURE
 from src.models.evaluate import adjusted_rand, misclassification_rate
 from src.models.loss import get_embedding
-from src.visualization.visualize import matplotlib_animation, plot_data
+from src.visualization.visualize import matplotlib_animation, plot_data, plotly_animation
 
 
 def get_subset(X, y, subset_size1, subset_size2):
@@ -417,9 +417,12 @@ def experiment4():
     cure = CURE(random_state=seed)
     weight_history = cure.fit(X_train, record_history=True)[-1]
     embedding_history = get_embedding(weight_history, X_train)
-    X_embd = embedding_history[-1]
 
     # animate cure
+    file = './figures/cure_animation.html'
+    plotly_animation(embedding_history, y_train, file, labels=['Flower 1', 'Flower 2'])
+    
+    file = './figures/cure_animation.mp4'
     matplotlib_animation(embedding_history, y_train, labels=['Flower 1', 'Flower 2'])
 
 
