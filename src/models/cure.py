@@ -11,12 +11,13 @@ class CURE:
     CURE clustering class.
     """
 
-    def __init__(self, a=1.1, b=2, random_state=None):
+    def __init__(self, a=1.1, b=2, n_starts=3, random_state=None):
         self.a = a
         self.b = b
+        self.n_starts = n_starts
         self.random_state = random_state
 
-    def fit(self, X, y=None, n_starts=3, record_history=False):
+    def fit(self, X, y=None, n_starts=None, record_history=False):
         """
         Minimize the loss function to find the weights that best separate 
         the data into two clusters.
@@ -34,7 +35,7 @@ class CURE:
             Ignored. This parameter exists only for compatibility with Pipeline.
         n_starts : int, optional
             Number of times to run the optimization, each with a different 
-            initial weights, by default 3.
+            initial weights, by default None. If None, self.n_starts is used.
         record_history : bool, optional
             Record the weights at every iteration. This is a time consuming 
             operation so it is not recommended except for plotting. By default False.
@@ -49,6 +50,7 @@ class CURE:
         """
 
         # initial values
+        self.n_starts = n_starts if n_starts is not None else self.n_starts
         best_score = np.inf
         best_weights = None
         best_weight_history = None
@@ -57,7 +59,7 @@ class CURE:
         rng = np.random.default_rng(self.random_state)
         seeds = rng.integers(0, 2**32, size=n_starts)
 
-        for i in range(n_starts):
+        for i in range(self.n_starts):
 
             # get weights that best minminimize the loss function
             weight_history = []
