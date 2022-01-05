@@ -137,7 +137,7 @@ def update_figure(frame_number, embedding_history, y, ax, n_bins, limits, labels
     ax.legend()
 
 
-def matplotlib_animation(embedding_history, y, file, labels=None, n_bins=20):
+def matplotlib_animation(embedding_history, y, file=None, labels=None, n_bins=20):
     """
     Create an animation of the data embedding changing over time as the weights change in the CURE algorithm.
     Use matplotlib and return an mp4 file.
@@ -148,8 +148,9 @@ def matplotlib_animation(embedding_history, y, file, labels=None, n_bins=20):
         The data embedding at each iteration. Each row is the data embedded with a different set of weights.
     y : (n_samples,) array
         The labels for the data.
-    file : file, str, or pathlib.Path
+    file : file, str, or pathlib.Path. by default None
         File or filename to which the data is saved. Should end with '.mp4'.
+        If None, the data is not saved.
     labels : list of str, optional
         The unique class name that each (numeric) label corresponds to, by default None.
     n_bins : int, optional
@@ -175,7 +176,8 @@ def matplotlib_animation(embedding_history, y, file, labels=None, n_bins=20):
                                    interval=500,
                                    repeat_delay=2000
                                    )
-    anim.save(file, writer='ffmpeg')
+    if file:
+        anim.save(file, writer='ffmpeg')
     return anim
 
 
@@ -190,8 +192,9 @@ def plotly_animation(embedding_history, y, file, labels=None, n_bins=20):
         The data embedding at each iteration. Each row is the data embedded with a different set of weights.
     y : (n_samples,) array
         The labels for the data.
-    file : file, str, or pathlib.Path
+    file : file, str, or pathlib.Path. by default None
         File or filename to which the data is saved. Should end with '.html'.
+        If None, the data is not saved.
     labels : list of str, optional
         The unique class name that each (numeric) label corresponds to, by default None.
     n_bins : int, optional
@@ -235,5 +238,6 @@ def plotly_animation(embedding_history, y, file, labels=None, n_bins=20):
     fig.layout.updatemenus[0].buttons[0].args[1]['transition']['duration'] = 1
 
     # save animation
-    plotly.offline.plot(fig, filename=file)
+    if file:
+        plotly.offline.plot(fig, filename=file)
     return fig

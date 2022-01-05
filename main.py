@@ -14,7 +14,7 @@ from sklearn.model_selection import train_test_split as tts
 from icecream import ic
 
 # import local files
-from src.data.make_dataset import iris_data, elliptical_data, add_intercept
+from src.data.make_dataset import iris_data, elliptical_data, add_intercept, fashion_mnist_data
 from src.models.cure import CURE
 from src.models.evaluate import adjusted_rand, misclassification_rate
 from src.models.loss import get_embedding
@@ -34,23 +34,55 @@ def get_subset(X, y, subset_size1, subset_size2):
     return X, y
 
 
-def experiment1():
+def experiment1(save=False):
+    """
+    Experiment1: Run CURE on an elliptically distributed dataset. Then.
+        1. Animate how CURE embeds the data.
+        2. Plot the true clustering and CURE's predicted clustering.
+        3. Evaluate the predicted clustering.
+
+    Parameters
+    ----------
+    save : bool, optional
+        If true, save the figures, by default False
+
+    Returns
+    -------
+    results : dict
+        A dictionary containing the results of the experiment.
+    """
+
+    # initial values
+    outdir = './figures/experiment1/'
+    seed = 420
 
     # get data
-    seed = 42
     n = 1000
     d = 2
-    X, y = elliptical_data(n, d, seed=42, mu_val=[0, 4], sigma_val=5)
-    X = add_intercept(X)
+    labels = ['Class 1', 'Class 2']
+    X, y = elliptical_data(n, d, seed=seed, mu_val=[0, 4], sigma_val=5)
 
     # run cure
     cure = CURE(random_state=seed)
-    y_pred = cure.fit_predict(X)
+    weight_history = cure.fit(add_intercept(X), record_history=True)[-1]
+    y_pred = cure.predict(add_intercept(X))
+    embedding_history = get_embedding(weight_history, add_intercept(X))
 
-    # plot it
-    true_clustering = plot_data(X, y, title='True Clustering')
-    predicted_clustering = plot_data(
-        X, y, title='Predicted Clustering via CURE')
+    # animate cure
+    file = outdir + 'cure_animation.html' if save else None
+    anim_plotly = plotly_animation(embedding_history, y, file, labels=labels)
+
+    file = outdir + 'cure_animation.mp4' if save else None
+    anim_matplt = matplotlib_animation(
+        embedding_history, y, file, labels=labels)
+
+    # plot data
+    file = outdir + 'true_clustering.png' if save else None
+    true_clustering = plot_data(X, y, file=file, title='True Clustering',
+                                labels=labels)
+    file = outdir + 'cure_clustering.png' if save else None
+    cure_clustering = plot_data(X, y_pred, file, title='Predicted Clustering via CURE',
+                                labels=labels)
 
     # evaluate predictions
     adj_rand = adjusted_rand(y, y_pred)
@@ -58,13 +90,19 @@ def experiment1():
     print('Adjusted Rand Index = {:.3f}\nMisclassification Rate = {:.3f}%'.format(
         adj_rand, misclf * 100))
 
-    # assert satements to verify everything is working
-    adj_rand_true = 0.9840480393607277
-    misclf_true = 0.00400000000000000
+    # assert statements to verify everything is working
+    adj_rand_true = 0.9880240131963988
+    misclf_true = 0.0030000000000000027
     np.testing.assert_allclose(
         adj_rand, adj_rand_true, err_msg='Adjusted Rand Index is incorrect. You done goofed!')
     np.testing.assert_allclose(
         misclf, misclf_true, err_msg='Misclassification Rate is incorrect. You done goofed!')
+
+    results = {'anim_plotly': anim_plotly, 'anim_matplt': anim_matplt,
+               'true_clustering': true_clustering, 'cure_clustering': cure_clustering,
+               'adj_rand': adj_rand, 'misclf': misclf}
+
+    return results
 
 
 def experiment2(save=False):
@@ -406,54 +444,24 @@ def experiment3():
     return df_ari, df_mclf, X, y
 
 
-def experiment4():
+def experiment5():
 
     # initial values
-    outdir = './figures/experiment4/'
+    outdir = './figures/experiment5/'
+    seed = 420
 
     # get data
-    seed = 420
-    # labels = ['virginica', 'versicolor']
-    # X, y = iris_data(labels)
-    n = 1000
-    d = 2
-    labels = ['Class 1', 'Class 2']
-    X, y = elliptical_data(n, d, seed=42, mu_val=[0, 4], sigma_val=5)
-
-    # run cure
-    cure = CURE(random_state=seed)
-    weight_history = cure.fit(add_intercept(X), record_history=True)[-1]
-    y_pred = cure.predict(add_intercept(X))
-    embedding_history = get_embedding(weight_history, add_intercept(X))
-
-    # animate cure
-    file = outdir + 'cure_animation.html'
-    plotly_animation(embedding_history, y, file, labels=labels)
-
-    file = outdir + 'cure_animation.mp4'
-    matplotlib_animation(embedding_history, y, file, labels=labels)
+    labels = ['T-Shirt', 'Pullover']
+    X, y = fashion_mnist_data()
+    ic(X.shape, y.shape)
 
     # plot data
-    file = outdir + 'true_clustering.png'
-    true_clustering = plot_data(X, y, file=file, title='True Clustering',
-                                labels=labels)
-    file = outdir + 'cure_clustering.png'
-    cure_clustering = plot_data(X, y_pred, file, title='Predicted Clustering via CURE',
-                                labels=labels)
-
-    # evaluate predictions
-    adj_rand = adjusted_rand(y, y_pred)
-    misclf = misclassification_rate(y, y_pred)
-    print('Adjusted Rand Index = {:.3f}\nMisclassification Rate = {:.3f}%'.format(
-        adj_rand, misclf * 100))
-
-
-def experiment5():
-    pass
+    title = 'Fashion MNIST PCA'
+    plot_data(X, y, file=outdir + 'true_clustering.png',
+              title=title, labels=labels)
 
 
 if __name__ == '__main__':
-    # experiment1()
+    experiment1()
     # experiment2(save=True)
     # experiment3()
-    experiment4()
