@@ -6,11 +6,12 @@ import numpy as np
 import pandas as pd
 
 from matplotlib import animation
+from sklearn.decomposition import PCA
 
 
-def plot_data(X, y, file, title=None, labels=None, save=False):
+def plot_data(X, y, file=None, title=None, labels=None):
     """
-    Plot 2D data. Each class is plotted in a different color.
+    Plot 2D data. Each class is plotted in a different color. Use PCA if the data is not 2D.
 
     Parameters
     ----------
@@ -18,8 +19,9 @@ def plot_data(X, y, file, title=None, labels=None, save=False):
         The data.
     y : (n_samples,) array
         The labels for the data.
-    file : file, str, or pathlib.Path
+    file : file, str, or pathlib.Path. by default None
         File or filename to which the data is saved. Should end with '.png'.
+        If None, the data is not saved.
     title : str, optional
         The title of the figure, by default None.
     labels : list of str, optional
@@ -32,6 +34,11 @@ def plot_data(X, y, file, title=None, labels=None, save=False):
     matplotlib.figure.Figure
         A figure that plots each class of the data in a different color.
     """
+
+    # reduce to 2D if necessary
+    if X.shape[1] > 2:
+        pca = PCA(n_components=2)
+        X = pca.fit_transform(X)
 
     # plot the data
     fig, ax = plt.subplots(figsize=(10, 5))
@@ -46,7 +53,7 @@ def plot_data(X, y, file, title=None, labels=None, save=False):
     plt.legend()
 
     # save the data
-    if save:
+    if file:
         fig.savefig(file)
     return fig
 
@@ -133,7 +140,7 @@ def update_figure(frame_number, embedding_history, y, ax, n_bins, limits, labels
 def matplotlib_animation(embedding_history, y, file, labels=None, n_bins=20):
     """
     Create an animation of the data embedding changing over time as the weights change in the CURE algorithm.
-    Use matplotlib.
+    Use matplotlib and return an mp4 file.
 
     Parameters
     ----------
@@ -175,7 +182,7 @@ def matplotlib_animation(embedding_history, y, file, labels=None, n_bins=20):
 def plotly_animation(embedding_history, y, file, labels=None, n_bins=20):
     """
     Create an animation of the data embedding changing over time as the weights change in the CURE algorithm.
-    Use plotly.
+    Use plotly and return an html file.
 
     Parameters
     ----------

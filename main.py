@@ -264,13 +264,15 @@ def experiment2(save=False):
                     + " may not work as expected.",
                     category=UserWarning,
                 )
-                algorithm.fit(add_intercept(X), y) if name == 'CURE' else algorithm.fit(X)
+                algorithm.fit(add_intercept(
+                    X), y) if name == 'CURE' else algorithm.fit(X)
 
             t1 = time.time()
             if hasattr(algorithm, "labels_"):
                 y_pred = algorithm.labels_.astype(int)
             else:
-                y_pred = algorithm.predict(add_intercept(X)) if name == 'CURE' else algorithm.predict(X)
+                y_pred = algorithm.predict(add_intercept(
+                    X)) if name == 'CURE' else algorithm.predict(X)
 
             plt.subplot(len(datasets_), len(clustering_algorithms), plot_num)
             if i_dataset == 0:
@@ -406,24 +408,48 @@ def experiment3():
 
 def experiment4():
 
+    # initial values
+    outdir = './figures/experiment4/'
+
     # get data
     seed = 420
-    classes = [2, 1]
-    X, y = iris_data(classes)
-    X = add_intercept(X)
-    X_train, X_test, y_train, y_test = tts(X, y, random_state=seed)
+    # labels = ['virginica', 'versicolor']
+    # X, y = iris_data(labels)
+    n = 1000
+    d = 2
+    labels = ['Class 1', 'Class 2']
+    X, y = elliptical_data(n, d, seed=42, mu_val=[0, 4], sigma_val=5)
 
     # run cure
     cure = CURE(random_state=seed)
-    weight_history = cure.fit(X_train, record_history=True)[-1]
-    embedding_history = get_embedding(weight_history, X_train)
+    weight_history = cure.fit(add_intercept(X), record_history=True)[-1]
+    y_pred = cure.predict(add_intercept(X))
+    embedding_history = get_embedding(weight_history, add_intercept(X))
 
     # animate cure
-    file = './figures/cure_animation.html'
-    plotly_animation(embedding_history, y_train, file, labels=['Flower 1', 'Flower 2'])
-    
-    file = './figures/cure_animation.mp4'
-    matplotlib_animation(embedding_history, y_train, labels=['Flower 1', 'Flower 2'])
+    file = outdir + 'cure_animation.html'
+    plotly_animation(embedding_history, y, file, labels=labels)
+
+    file = outdir + 'cure_animation.mp4'
+    matplotlib_animation(embedding_history, y, file, labels=labels)
+
+    # plot data
+    file = outdir + 'true_clustering.png'
+    true_clustering = plot_data(X, y, file=file, title='True Clustering',
+                                labels=labels)
+    file = outdir + 'cure_clustering.png'
+    cure_clustering = plot_data(X, y_pred, file, title='Predicted Clustering via CURE',
+                                labels=labels)
+
+    # evaluate predictions
+    adj_rand = adjusted_rand(y, y_pred)
+    misclf = misclassification_rate(y, y_pred)
+    print('Adjusted Rand Index = {:.3f}\nMisclassification Rate = {:.3f}%'.format(
+        adj_rand, misclf * 100))
+
+
+def experiment5():
+    pass
 
 
 if __name__ == '__main__':

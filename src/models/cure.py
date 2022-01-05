@@ -124,3 +124,24 @@ class CURE:
         self.fit(X, **kwargs)
         y_pred = self.predict(X)
         return y_pred
+
+
+    def set_params(self, **params):
+        """
+        Set the parameters of the model.
+
+        Parameters
+        ----------
+        params : dict
+            The parameters to set.
+
+        Returns
+        -------
+        self : CURE
+            The model with updated parameters.
+        """
+
+        for key, value in params.items():
+            setattr(self, key, value)
+
+        return self
