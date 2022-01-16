@@ -77,12 +77,12 @@ def experiment1(save=False):
         embedding_history, y, file, labels=labels)
 
     # plot data
-    file = outdir + 'true_clustering.png' if save else None
-    true_clustering = plot_data(X, y, file=file, title='True Clustering',
-                                labels=labels)
-    file = outdir + 'cure_clustering.png' if save else None
-    cure_clustering = plot_data(X, y_pred, file, title='Predicted Clustering via CURE',
-                                labels=labels)
+    file = outdir + 'true_clustering_fig.png' if save else None
+    true_clustering_fig = plot_data(X, y, file=file, title='True Clustering',
+                                    labels=labels)
+    file = outdir + 'cure_clustering_fig.png' if save else None
+    cure_clustering_fig = plot_data(X, y_pred, file, title='Predicted Clustering via CURE',
+                                    labels=labels)
 
     # evaluate predictions
     adj_rand = adjusted_rand(y, y_pred)
@@ -99,7 +99,7 @@ def experiment1(save=False):
         misclf, misclf_true, err_msg='Misclassification Rate is incorrect. You done goofed!')
 
     results = {'anim_plotly': anim_plotly, 'anim_matplt': anim_matplt,
-               'true_clustering': true_clustering, 'cure_clustering': cure_clustering,
+               'true_clustering_fig': true_clustering_fig, 'cure_clustering_fig': cure_clustering_fig,
                'adj_rand': adj_rand, 'misclf': misclf}
 
     return results
@@ -444,24 +444,59 @@ def experiment3():
     return df_ari, df_mclf, X, y
 
 
-def experiment5():
+def experiment4(save=False):
+    """
+    Experiment4: Run CURE on the T-shirt and hoodie classes from the Fashion MNIST dataset.
+    Then:
+        1. Plot the true clustering and CURE's predicted clustering.
+        2. Evaluate the predicted clustering.
+
+    Parameters
+    ----------
+    save : bool, optional
+        If true, save the figures, by default False
+
+    Returns
+    -------
+    results : dict
+        A dictionary containing the results of the experiment.
+    """    
 
     # initial values
-    outdir = './figures/experiment5/'
+    outdir = './figures/experiment4/'
     seed = 420
 
     # get data
     labels = ['T-Shirt', 'Pullover']
-    X, y = fashion_mnist_data()
-    ic(X.shape, y.shape)
+    X, y = fashion_mnist_data(n_class1=100, n_class2=100)
+
+    # run cure
+    cure = CURE(random_state=seed)
+    y_pred = cure.fit_predict(add_intercept(X))
 
     # plot data
-    title = 'Fashion MNIST PCA'
-    plot_data(X, y, file=outdir + 'true_clustering.png',
-              title=title, labels=labels)
+    title = 'PCA: Fashion MNIST'
+    file = outdir + 'true_clustering_fig.png' if save else None
+    true_clustering_fig = plot_data(
+        X, y, file=file, title=title, labels=labels)
+    file = outdir + 'pred_clustering.png' if save else None
+    cure_clustering_fig = plot_data(
+        X, y_pred, file=file, title=title, labels=labels)
+
+    # evaluate predictions
+    adj_rand = adjusted_rand(y, y_pred)
+    misclf = misclassification_rate(y, y_pred)
+    print('Adjusted Rand Index = {:.3f}\nMisclassification Rate = {:.3f}%'.format(
+        adj_rand, misclf * 100))
+
+    results = {'true_clustering_fig': true_clustering_fig, 'cure_clustering_fig': cure_clustering_fig,
+               'adj_rand': adj_rand, 'misclf': misclf}
+
+    return results
 
 
 if __name__ == '__main__':
-    experiment1()
+    # experiment1(save=True)
     # experiment2(save=True)
     # experiment3()
+    experiment4(save=True)
