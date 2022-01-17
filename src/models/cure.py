@@ -11,21 +11,15 @@ class CURE:
     CURE clustering class.
     """
 
-    def __init__(self, a=1.1, b=2, n_starts=3, random_state=None):
+    def __init__(self, a=1.1, b=2, random_state=None):
         self.a = a
         self.b = b
-        self.n_starts = n_starts
         self.random_state = random_state
 
-    def fit(self, X, y=None, n_starts=None, record_history=False):
+    def fit(self, X, y=None, record_history=False):
         """
         Minimize the loss function to find the weights that best separate 
         the data into two clusters.
-
-        Each time we minmize the loss function it is with different initial weights.
-        So we use self.random_state to genreate n_starts different seeds. Each
-        seed seeds a random number generator from which the initial weights
-        are drawn according to a normal distribution.
 
         Parameters
         ----------
@@ -33,9 +27,6 @@ class CURE:
             The data.
         y : None, optional
             Ignored. This parameter exists only for compatibility with Pipeline.
-        n_starts : int, optional
-            Number of times to run the optimization, each with a different 
-            initial weights, by default None. If None, self.n_starts is used.
         record_history : bool, optional
             Record the weights at every iteration. This is a time consuming 
             operation so it is not recommended except for plotting. By default False.
@@ -50,37 +41,23 @@ class CURE:
         """
 
         # initial values
-        self.n_starts = n_starts if n_starts is not None else self.n_starts
-        best_score = np.inf
-        best_weights = None
-        best_weight_history = None
+        weight_history = []
         callback = (lambda xk: weight_history.append(xk)) \
             if record_history else None
         rng = np.random.default_rng(self.random_state)
-        seeds = rng.integers(0, 2**32, size=n_starts)
 
-        for i in range(self.n_starts):
-
-            # get weights that best minminimize the loss function
-            weight_history = []
-            weights_0 = np.random.default_rng(seeds[i]).normal(size=X.shape[1])
-            res = minimize(loss, weights_0, args=(X, self.a, self.b),
-                           callback=callback)
-
-            # if there is a lower score, update the weights
-            score = loss(res.x, X, self.a, self.b)
-            if score < best_score:
-                best_score = score
-                best_weights = res.x
-                best_weight_history = np.vstack(
-                    weight_history) if record_history else None
+        # get weights that best mininimize the loss function
+        weights_0 = rng.normal(size=X.shape[1])
+        res = minimize(loss, weights_0, args=(X, self.a, self.b),
+                       callback=callback)
 
         # record values
-        self.weights = best_weights
-        self.weight_history = best_weight_history
-        self.score = best_score
+        self.weights = res.x
+        self.weight_history = np.vstack(
+            weight_history) if record_history else None
+        self.score = loss(res.x, X, self.a, self.b)
 
-        return best_weights, best_weight_history
+        return self.weights, self.weight_history
 
     def predict(self, X, weights=None):
         """
@@ -126,7 +103,6 @@ class CURE:
         self.fit(X, **kwargs)
         y_pred = self.predict(X)
         return y_pred
-
 
     def set_params(self, **params):
         """
