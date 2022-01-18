@@ -10,6 +10,7 @@ Many traditional clustering algorithms struggle to cluster elliptically distribu
 ## Equations
 
 CURE seeks to find the weights that minimize the loss function
+
 $$
 \boldsymbol{\beta}^* = 
     \underset{ \boldsymbol{\beta} \in \mathbb{R}^{d}}{\arg\min}
