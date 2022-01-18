@@ -53,7 +53,7 @@ def experiment1(save=False):
     """
 
     # initial values
-    outdir = './figures/experiment1/'
+    outdir = './reports/figures/experiment1/'
     seed = 420
 
     # get data
@@ -135,7 +135,7 @@ def experiment2(save=False):
     """
 
     np.random.seed(0)
-    outdir = './figures/'
+    outdir = './reports/figures/'
 
     # ============
     # Generate datasets. We choose the size big enough to see the scalability
@@ -463,7 +463,7 @@ def experiment4(save=False):
     """    
 
     # initial values
-    outdir = './figures/experiment4/'
+    outdir = './reports/figures/experiment4/'
     seed = 420
 
     # get data
@@ -476,7 +476,7 @@ def experiment4(save=False):
 
     # plot data
     title = 'PCA: Fashion MNIST'
-    file = outdir + 'true_clustering_fig.png' if save else None
+    file = outdir + 'true_clustering.png' if save else None
     true_clustering_fig = plot_data(
         X, y, file=file, title=title, labels=labels)
     file = outdir + 'pred_clustering.png' if save else None
