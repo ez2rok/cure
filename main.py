@@ -130,12 +130,12 @@ def experiment2(save=False):
 
     Returns
     -------
-    [type]
-        [description]
+    fig : matplotlib.pyplot.figure
+        The different clusterings and their performance.
     """
 
     np.random.seed(0)
-    outdir = './reports/figures/'
+    file = './reports/experiment2/compare_clustering.png'
 
     # ============
     # Generate datasets. We choose the size big enough to see the scalability
@@ -361,12 +361,12 @@ def experiment2(save=False):
             plot_num += 1
 
         if save:
-            plt.savefig(outdir + 'compare_clustering.png')
+            plt.savefig(file)
     fig = plt.gcf()
     return fig
 
 
-def experiment3():
+def experiment3(save=False):
 
     def get_subset(X, y, subset_size1, subset_size2):
         """
@@ -446,10 +446,9 @@ def experiment3():
 
 def experiment4(save=False):
     """
-    Experiment4: Run CURE on the T-shirt and hoodie classes from the Fashion MNIST dataset.
-    Then:
-        1. Plot the true clustering and CURE's predicted clustering.
-        2. Evaluate the predicted clustering.
+    Compare the adjusted rand index (ARI) and the misclassification rate of CURE against those of
+    K-Means, Spectral Clustering (vanilla), and Spectral Clustering (Gaussian kernel). 
+    Run these classifiers on the T-shirt and hoodie classes from the Fashion MNIST dataset.
 
     Parameters
     ----------
@@ -458,42 +457,52 @@ def experiment4(save=False):
 
     Returns
     -------
-    results : dict
-        A dictionary containing the results of the experiment.
-    """    
+    dfs : list of DataFrames
+        The first element of the list is the dataframe containing the ARI scores for the four
+        clustering algorithms. The second element is the dataframe containing the misclassification
+        rates for the four clustering algorithms.
+    """
 
     # initial values
-    outdir = './reports/figures/experiment4/'
     seed = 420
+    n_class1s = [60, 60]
+    n_class2s = [2, 4]
+    clfs = [CURE(random_state=seed),
+            cluster.KMeans(n_clusters=2, random_state=seed),
+            cluster.SpectralClustering(n_clusters=2, random_state=seed, affinity='nearest_neighbors'),
+            cluster.SpectralClustering(n_clusters=2, random_state=seed)]
+    misclf_results = np.empty((len(clfs), len(n_class1s)))
+    ari_results = np.empty((len(clfs), len(n_class1s)))
 
-    # get data
-    labels = ['T-Shirt', 'Pullover']
-    X, y = fashion_mnist_data(n_class1=100, n_class2=100)
+    # loop over each clf and the different class ratios
+    for i, clf in enumerate(clfs):
+        for j, (n_class1, n_class2) in enumerate(zip(n_class1s, n_class2s)):
 
-    # run cure
-    cure = CURE(random_state=seed)
-    y_pred = cure.fit_predict(add_intercept(X))
+            # get data
+            X, y = fashion_mnist_data(n_class1=n_class1, n_class2=n_class2)
 
-    # plot data
-    title = 'PCA: Fashion MNIST'
-    file = outdir + 'true_clustering.png' if save else None
-    true_clustering_fig = plot_data(
-        X, y, file=file, title=title, labels=labels)
-    file = outdir + 'pred_clustering.png' if save else None
-    cure_clustering_fig = plot_data(
-        X, y_pred, file=file, title=title, labels=labels)
+            # run algorithm and make predictions
+            if type(clf).__name__ == 'CURE':
+                X = add_intercept(X)
+            y_pred = clf.fit_predict(X)
 
-    # evaluate predictions
-    adj_rand = adjusted_rand(y, y_pred)
-    misclf = misclassification_rate(y, y_pred)
-    print('Adjusted Rand Index = {:.3f}\nMisclassification Rate = {:.3f}%'.format(
-        adj_rand, misclf * 100))
+            # evaluate and record predictions
+            ari_results[i, j] = adjusted_rand(y, y_pred)
+            misclf_results[i, j] = misclassification_rate(y, y_pred)
 
-    results = {'true_clustering_fig': true_clustering_fig, 'cure_clustering_fig': cure_clustering_fig,
-               'adj_rand': adj_rand, 'misclf': misclf}
-
-    return results
-
+    # write results to file
+    dfs = []
+    filenames = ['./reports/experiment4/adjusted_rand_index.csv', './reports/experiment4/misclassification.csv']
+    index = ['CURE', 'K-Means', 'Spectral Clustering (vanilla)', 'Spectral Clustering (Gaussian kernel)']
+    columns = ['{}:1'.format(n_class1 // n_class2)
+               for (n_class1, n_class2) in zip(n_class1s, n_class2s)]
+    for filename, result in zip(filenames, [ari_results, misclf_results]):
+        df = pd.DataFrame(result, columns=columns, index=index)
+        df.columns.name = 'Class Ratio'
+        if save:
+            df.to_csv(filename)
+        dfs.append(df)
+    return dfs
 
 if __name__ == '__main__':
     # experiment1(save=True)
