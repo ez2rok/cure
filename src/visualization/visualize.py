@@ -9,7 +9,7 @@ from matplotlib import animation
 from sklearn.decomposition import PCA
 
 
-def plot_data(X, y, file=None, title=None, labels=None):
+def plot_data(X, y, file=None, title=None, labels=None, ax=None):
     """
     Plot 2D data. Each class is plotted in a different color. Use PCA if the data is not 2D.
 
@@ -26,8 +26,9 @@ def plot_data(X, y, file=None, title=None, labels=None):
         The title of the figure, by default None.
     labels : list of str, optional
         The labels for the classes, by default None.
-    save : bool, optional
-        If true, save this figure, by default False.
+    ax : matplotlib.axes._subplots.AxesSubplot, optional
+        The axes that we are plotting the data on, by default None. If None, a new 
+        figure is created. Else, the data is plotted on the given axes.
 
     Returns
     -------
@@ -40,8 +41,13 @@ def plot_data(X, y, file=None, title=None, labels=None):
         pca = PCA(n_components=2)
         X = pca.fit_transform(X)
 
+    # get the figure and axes
+    if ax is None:
+        fig, ax = plt.subplots(figsize=(10, 5))
+    else:
+        fig = ax.get_figure()
+
     # plot the data
-    fig, ax = plt.subplots(figsize=(10, 5))
     for i, y_val in enumerate(np.unique(y)):
         label = labels[i] if labels is not None else 'Class {}'.format(y_val)
         ax.scatter(X[y == y_val, 0], X[y == y_val, 1], label=label, s=10)
@@ -50,7 +56,8 @@ def plot_data(X, y, file=None, title=None, labels=None):
     limit = np.max(np.abs(X)) * 1.03
     ax.set(xlabel='x', ylabel='y', title=title,
            xlim=(-limit, limit), ylim=(-limit, limit))
-    plt.legend()
+    if labels:
+        plt.legend()
 
     # save the data
     if file:
