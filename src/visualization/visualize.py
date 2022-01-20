@@ -57,7 +57,7 @@ def plot_data(X, y, file=None, title=None, labels=None, ax=None):
     ax.set(xlabel='x', ylabel='y', title=title,
            xlim=(-limit, limit), ylim=(-limit, limit))
     if labels:
-        plt.legend()
+        ax.legend()
 
     # save the data
     if file:

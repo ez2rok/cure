@@ -464,48 +464,152 @@ def experiment4(save=False):
     """
 
     # initial values
+    file = './reports/experiment4/fashion_mnist.png'
     seed = 420
-    n_class1s = [60, 60]
-    n_class2s = [2, 4]
+
+    # class ratios
+    # n1s = [6000] * 4
+    # n2s = [6000, 3000, 2000, 1500]
+    # m1s = [1000] * 4
+    # m2s = [1000, 500, 333, 250]
+    n1s = [60, 60]  # number of training datapoints in class 1
+    n2s = [2, 4]  # number of training datapoints in class 2
+    m1s = [30, 30]  # number of testing datapoints in class 1
+    m2s = [1, 2]  # number of testing datapoints in class 2
+    n_class1s = [m1 + n1 for m1, n1 in zip(m1s, n1s)]
+    n_class2s = [m2 + n2 for m2, n2 in zip(m2s, n2s)]
+
+    # initialize classifiers
+    n_inits = 3  # number of times to run and initialize the CURE classifier
     clfs = [CURE(random_state=seed),
             cluster.KMeans(n_clusters=2, random_state=seed),
-            cluster.SpectralClustering(n_clusters=2, random_state=seed, affinity='nearest_neighbors'),
+            cluster.SpectralClustering(
+                n_clusters=2, random_state=seed, affinity='nearest_neighbors'),
             cluster.SpectralClustering(n_clusters=2, random_state=seed)]
-    misclf_results = np.empty((len(clfs), len(n_class1s)))
-    ari_results = np.empty((len(clfs), len(n_class1s)))
 
-    # loop over each clf and the different class ratios
-    for i, clf in enumerate(clfs):
-        for j, (n_class1, n_class2) in enumerate(zip(n_class1s, n_class2s)):
+    # initialize result arrays
+    misclf_results = np.empty((len(clfs), len(n1s)), dtype=object)
+    ari_results = np.empty((len(clfs), len(n1s)), dtype=object)
 
-            # get data
-            X, y = fashion_mnist_data(n_class1=n_class1, n_class2=n_class2)
+    # plotting values
+    clf_names = ['CURE', 'K-Means',
+                 'Spectral Clustering\n(vanilla)', 'Spectral Clustering\n(Gaussian kernel)']
+    class_ratios = ['{}:1'.format(n1 // n2)
+                    for (n1, n2) in zip(n1s, n2s)]
 
-            # run algorithm and make predictions
-            if type(clf).__name__ == 'CURE':
-                X = add_intercept(X)
-            y_pred = clf.fit_predict(X)
+    # set up plot
+    fig, axs = plt.subplots(len(n1s), len(clfs) + 1,
+                            figsize=(5 * len(clfs), 10), sharey=True, sharex=True)
+    [ax.set(adjustable='box', aspect='equal') for ax in axs.flatten()]
+    fig.suptitle(
+        'CURE and Other Clustering Algorithms on Fashion MNIST (PCA): ', size=24)
+    plt.setp(fig.get_axes(), xticks=[], yticks=[])
+    fig.tight_layout()
+    fig.subplots_adjust(left=0.02, wspace=0.05)
+
+    # loop through different class ratios of the data
+    for i, (n_class1, n_class2, m1, m2) in enumerate(zip(n_class1s, n_class2s, m1s, m2s)):
+
+        # get data
+        X, y = fashion_mnist_data(n_class1=n_class1, n_class2=n_class2)
+        X_train, y_train = X[m1:], y[m1:]
+
+        # plot data
+        ax = axs[i, 0]
+        plot_data(X, y, ax=ax, labels=['T-Shirt', 'Pullover'])
+        ax.set_ylabel(class_ratios[i], fontsize=16)
+        ax.set_xlabel(None)
+        if i == 0:
+            axs[i, 0].set_title('True Clustering', size=18)
+
+        # plot text
+        text = 'ARI: 100.0%\nMisClf: 0.0%'
+        ax.text(0.99, 0.01, text, transform=ax.transAxes,
+                size=13, horizontalalignment="right")
+
+        # loop through different classifiers
+        for j, clf in enumerate(clfs):
+
+            # catch warnings
+            with warnings.catch_warnings():
+                warnings.filterwarnings(
+                    "ignore",
+                    message="the number of connected components of the "
+                    + "connectivity matrix is [0-9]{1,2}"
+                    + " > 1. Completing it to avoid stopping the tree early.",
+                    category=UserWarning,
+                )
+                warnings.filterwarnings(
+                    "ignore",
+                    message="Graph is not fully connected, spectral embedding"
+                    + " may not work as expected.",
+                    category=UserWarning,
+                )
+
+                # run classification algorithm and make predictions
+                if type(clf).__name__ == 'CURE':
+                    y_preds = []
+                    for _ in range(n_inits):
+                        clf.fit(add_intercept(X_train), y_train)
+                        y_pred = clf.predict(add_intercept(X))
+                        y_preds.append(y_pred)
+                        clf = CURE(random_state=seed + 1)
+                elif type(clf).__name__ == 'KMeans':
+                    clf.fit(X_train, y_train)
+                    y_pred = clf.predict(X)
+                else:  # Spectral Clustering
+                    y_pred = clf.fit_predict(X)
 
             # evaluate and record predictions
-            ari_results[i, j] = adjusted_rand(y, y_pred)
-            misclf_results[i, j] = misclassification_rate(y, y_pred)
+            if type(clf).__name__ == 'CURE':
+                aris = [adjusted_rand(y, y_pred) for y_pred in y_preds]
+                misclfs = [misclassification_rate(
+                    y, y_pred) for y_pred in y_preds]
+                ari_results[j, i] = '{:.1f}% ± {:.3f}'.format(
+                    np.mean(aris) * 100, np.std(aris))
+                misclf_results[j, i] = '{:.1f}% ± {:.3f}'.format(
+                    np.mean(misclfs) * 100, np.std(misclfs))
+            else:
+                ari_results[j, i] = '{:.1f}%'.format(
+                    adjusted_rand(y, y_pred) * 100)
+                misclf_results[j, i] = '{:.1f}%'.format(
+                    misclassification_rate(y, y_pred) * 100)
+
+            # plot predictions
+            ax = axs[i, j + 1]
+            plot_data(X, y_pred, ax=ax)
+            ax.set(xlabel=None, ylabel=None)
+            if i == 0:
+                ax.set_title(clf_names[j], size=18)
+
+            # plot text
+            text = 'ARI: {}\nMisClf: {}'.format(
+                ari_results[j, i], misclf_results[j, i])
+            ax.text(0.99, 0.01, text, transform=ax.transAxes,
+                    size=13, horizontalalignment="right")
+
+            # save figure
+            if save:
+                fig.savefig(file)
 
     # write results to file
     dfs = []
-    filenames = ['./reports/experiment4/adjusted_rand_index.csv', './reports/experiment4/misclassification.csv']
-    index = ['CURE', 'K-Means', 'Spectral Clustering (vanilla)', 'Spectral Clustering (Gaussian kernel)']
-    columns = ['{}:1'.format(n_class1 // n_class2)
-               for (n_class1, n_class2) in zip(n_class1s, n_class2s)]
+    dir = './reports/experiment4/'
+    filenames = [dir + 'adjusted_rand_index.csv',
+                 dir + 'misclassification.csv']
     for filename, result in zip(filenames, [ari_results, misclf_results]):
-        df = pd.DataFrame(result, columns=columns, index=index)
+        df = pd.DataFrame(result, columns=class_ratios, index=clf_names)
         df.columns.name = 'Class Ratio'
         if save:
             df.to_csv(filename)
         dfs.append(df)
-    return dfs
+    ari_df, misclf_df = tuple(dfs)
+    return fig, ari_df, misclf_df
+
 
 if __name__ == '__main__':
     # experiment1(save=True)
     # experiment2(save=True)
     # experiment3()
-    experiment4(save=True)
+    fig, ari_df, misclf_df = experiment4(save=True)
+    ic(ari_df)

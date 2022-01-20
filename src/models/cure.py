@@ -31,13 +31,18 @@ class CURE:
             Record the weights at every iteration. This is a time consuming 
             operation so it is not recommended except for plotting. By default False.
 
-        Returns
+        Parameters
         -------
         best_weights : (n_features,) array
             The weights that best minimize the loss function.
         best_weights_history : (n_iterations, n_features) array
             The weights at every iteration. If record_history is False, this
             will be None.
+
+        Returns
+        -------
+        self : CURE
+            The model with updated parameters.
         """
 
         # initial values
@@ -57,7 +62,7 @@ class CURE:
             weight_history) if record_history else None
         self.score = loss(res.x, X, self.a, self.b)
 
-        return self.weights, self.weight_history
+        return self
 
     def predict(self, X, weights=None):
         """
