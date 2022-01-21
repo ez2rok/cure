@@ -64,7 +64,8 @@ def experiment1(save=False):
 
     # run cure
     cure = CURE(random_state=seed)
-    weight_history = cure.fit(add_intercept(X), record_history=True)[-1]
+    cure.fit(add_intercept(X), record_history=True)
+    weight_history = cure.weight_history
     y_pred = cure.predict(add_intercept(X))
     embedding_history = get_embedding(weight_history, add_intercept(X))
 
