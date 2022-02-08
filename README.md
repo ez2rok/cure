@@ -91,9 +91,7 @@ is small,
      <img src="https://latex.codecogs.com/svg.image?|x|&space;\leq&space;a" title="|x| \leq a" />
 , we will minimize
      <img src="https://latex.codecogs.com/svg.image?h" title="h" />
-which has two valleys around
-     <img src="https://latex.codecogs.com/svg.image?±1" title="±1" />
-. When
+which has two valleys around ±1. When
      <img src="https://latex.codecogs.com/svg.image?x" title="x" />
 is too big,
      <img src="https://latex.codecogs.com/svg.image?|x|&space;>&space;b" title="|x| > b" />
