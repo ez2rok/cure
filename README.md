@@ -3,12 +3,12 @@ Implement the clustering algorithm Clustering via Uncoupled  REgression (CURE) f
 
 # Explanation
 
-## Motivation
+### Motivation
 Many traditional clustering algorithms struggle to cluster elliptically distributed data. KNN, for example, assumes the data is spherically distributed and performs poorly when data is elliptically distributed. CURE seeks to solve this problem by creating a clustering algorithm that excels at clustering elliptically distributed data.
 
-## Loss Function
+### Loss Function
 
-### Equations
+#### Equations
 
 CURE seeks to find the weights that minimize the loss function
 
@@ -55,7 +55,7 @@ and
     <img src="https://latex.codecogs.com/svg.image?h(x)&space;=&space;(x^2-1)^2/4" title="h(x) = (x^2-1)^2/4" />
 .
 
-### Explain the Equations
+#### Explain the Equations
 
 We embed the data $\boldsymbol{X}$ into 1D space via the dot product $x = \boldsymbol{\beta}^T \boldsymbol{X_i}$. Then we plug $x$ into the discriminative function $f$ to separate, ie. discriminate, the embedded data into two clusters. How does this work? $f$ and $h$ both have minimums at both x=±1 so minimizing these equations will map many of our datapoints to x=1 and many of them to x=-1, resulting in two different clusters. Because $h$ becomes huge for large $x$ values ($h$ is quartic), we construct $f$ which is just like $h$ except that when $x$ is too big we clip its growth with linear functions. More explitically, $f$ has three parts. When $x$ is small, $|x| \leq a$, we will minimize $h$ which has two valleys around ±1. When $x$ is too big, $|x| > b$, we will minimize a linear function so our values don't blow up. When $x$ is somewhere in between, $a < |x| \leq b$, we use a cubic spline to connect the valleys to the linear function.
 
@@ -65,7 +65,7 @@ So $\frac{1}{n} \sum_{i=1}^{n} f( \boldsymbol{\beta}^T \boldsymbol{X_i})$ embeds
 
 Putting it all together, the loss function embeds the data $\boldsymbol{X} $ in 1D space and computes on average how well the data is separated into two evenly sized clusters located at x=±1. We minimize this score and record the weights, $\boldsymbol{\beta}^*$, that result in this minimization.
 
-## Clustering
+### Clustering
 Once we have computed $\boldsymbol{\beta}^*$, the clustering comes into play:
 \begin{align}
     y^{\text{pred}}_i
