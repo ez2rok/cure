@@ -4,6 +4,7 @@ This repository implements the clustering algorithm Clustering via Uncoupled  RE
 ### Table of Contents
 1. [Explanation](https://github.com/ez2rok/cure/blob/master/README.md#explanation)
 2. [Coding Overview](https://github.com/ez2rok/cure/blob/master/README.md#coding-overview)
+3. [Experiments](https://github.com/ez2rok/cure/blob/master/README.md#experiments)
 
 # Explanation
 
