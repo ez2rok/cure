@@ -1,4 +1,5 @@
-<img src="https://latex.codecogs.com/svg.image?$\sum_{i}^{n}$" title="$\sum_{i}^{n}$" />
+<img src="https://latex.codecogs.com/svg.image?\begin{displaymath}&space;&space;\frac{\sum_{s&space;\in&space;S}&space;s^2}{\sum_{p&space;\in&space;P}&space;p^2}\end{displaymath}" title="\begin{displaymath} \frac{\sum_{s \in S} s^2}{\sum_{p \in P} p^2}\end{displaymath}" />
+
 
 # CURE
 Implement the clustering algorithm Clustering via Uncoupled  REgression (CURE) from Wang's paper [Efficient Clustering for Stretched Mixtures: Landscape and Optimality](https://arxiv.org/abs/2003.09960).
