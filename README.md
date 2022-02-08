@@ -1,6 +1,3 @@
-<img src="https://latex.codecogs.com/svg.image?\begin{displaymath}&space;&space;\sum_{i=0}^{n}\end{displaymath}" title="\begin{displaymath} \sum_{i=0}^{n}\end{displaymath}" />
-
-
 # CURE
 Implement the clustering algorithm Clustering via Uncoupled  REgression (CURE) from Wang's paper [Efficient Clustering for Stretched Mixtures: Landscape and Optimality](https://arxiv.org/abs/2003.09960).
 
@@ -40,7 +37,7 @@ is a matrix of
 datapoints each with
     <img src="https://latex.codecogs.com/svg.image?d" title="d" />
 features, and 
-    <img src="https://latex.codecogs.com/svg.image?\hat{\boldsymbol{\mu_0}}&space;=&space;\frac{1}{n}&space;\sum_{i=1}^{n}&space;\boldsymbol{X_i}" title="\hat{\boldsymbol{\mu_0}} = \frac{1}{n} \sum_{i=1}^{n} \boldsymbol{X_i}" />
+    <img src="https://latex.codecogs.com/svg.image?\hat{\boldsymbol{\mu_0}}&space;=&space;\frac{1}{n}&space;\sum\nolimits_{i=1}^{n}&space;\boldsymbol{X_i}" title="\hat{\boldsymbol{\mu_0}} = \frac{1}{n} \sum_{i=1}^{n} \boldsymbol{X_i}" />
 is the value of the average data point. To get 
     <img src="https://latex.codecogs.com/svg.image?\boldsymbol{X}" title="\boldsymbol{X}" />
 we preappend a column of ones 
