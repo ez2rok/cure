@@ -53,7 +53,19 @@ and
     <img src="https://latex.codecogs.com/svg.image?h(x)&space;=&space;(x^2-1)^2/4" title="h(x) = (x^2-1)^2/4" />
 .
 
-We embed the data $\boldsymbol{X}$ into 1D space via the dot product $x = \boldsymbol{\beta}^T \boldsymbol{X_i}$. Then we plug $x$ into the discriminative function $f$ to separate, ie. discriminate, the embedded data into two clusters. How does this work? $f$ and $h$ both have minimums at both x=±1 so minimizing these equations will map many of our datapoints to x=1 and many of them to x=-1, resulting in two different clusters. Because $h$ becomes huge for large $x$ values ($h$ is quartic), we construct $f$ which is just like $h$ except that when $x$ is too big we clip its growth with linear functions. More explitically, $f$ has three parts. When $x$ is small, $|x| \leq a$, we will minimize $h$ which has two valleys around ±1. When $x$ is too big, $|x| > b$, we will minimize a linear function so our values don't blow up. When $x$ is somewhere in between, $a < |x| \leq b$, we use a cubic spline to connect the valleys to the linear function.
+We embed the data
+     <img src="https://latex.codecogs.com/svg.image?\boldsymbol{X}" title="\boldsymbol{X}" />
+into 1D space via the dot product
+<img src="https://latex.codecogs.com/svg.image?x&space;=&space;\boldsymbol{\beta}^T&space;\boldsymbol{X_i}" title="x = \boldsymbol{\beta}^T \boldsymbol{X_i}" />
+. Then we plug
+     <img src="https://latex.codecogs.com/svg.image?x" title="x" />
+into the discriminative function
+     <img src="https://latex.codecogs.com/svg.image?f" title="f" />
+to separate, ie. discriminate, the embedded data into two clusters. How does this work?
+     <img src="https://latex.codecogs.com/svg.image?f" title="f" />
+and
+     <img src="https://latex.codecogs.com/svg.image?h" title="h" />
+both have minimums at both x=±1 so minimizing these equations will map many of our datapoints to x=1 and many of them to x=-1, resulting in two different clusters. Because $h$ becomes huge for large $x$ values ($h$ is quartic), we construct $f$ which is just like $h$ except that when $x$ is too big we clip its growth with linear functions. More explitically, $f$ has three parts. When $x$ is small, $|x| \leq a$, we will minimize $h$ which has two valleys around ±1. When $x$ is too big, $|x| > b$, we will minimize a linear function so our values don't blow up. When $x$ is somewhere in between, $a < |x| \leq b$, we use a cubic spline to connect the valleys to the linear function.
 
 ![Discriminate functions](/reports/figures/discriminant.png)
 
