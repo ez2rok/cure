@@ -2,7 +2,10 @@
 Implement the clustering algorithm Clustering via Uncoupled  REgression (CURE) from Wang's paper [Efficient Clustering for Stretched Mixtures: Landscape and Optimality](https://arxiv.org/abs/2003.09960).
 
 <p align="center">
-    <img src="/reports/figures/experiment1/cure_animation.gif" alt="GIF of CURE" width="400" height="400" />
+    <figure>
+        <img src="/reports/figures/experiment1/cure_animation.gif" alt="GIF of CURE" width="400" height="400" />
+        <figcaption>GeeksforGeeks Logo</figcaption>
+    </figure>
 </p>
 
 
