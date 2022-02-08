@@ -65,7 +65,43 @@ to separate, ie. discriminate, the embedded data into two clusters. How does thi
      <img src="https://latex.codecogs.com/svg.image?f" title="f" />
 and
      <img src="https://latex.codecogs.com/svg.image?h" title="h" />
-both have minimums at both x=±1 so minimizing these equations will map many of our datapoints to x=1 and many of them to x=-1, resulting in two different clusters. Because $h$ becomes huge for large $x$ values ($h$ is quartic), we construct $f$ which is just like $h$ except that when $x$ is too big we clip its growth with linear functions. More explitically, $f$ has three parts. When $x$ is small, $|x| \leq a$, we will minimize $h$ which has two valleys around ±1. When $x$ is too big, $|x| > b$, we will minimize a linear function so our values don't blow up. When $x$ is somewhere in between, $a < |x| \leq b$, we use a cubic spline to connect the valleys to the linear function.
+both have minimums at both
+     <img src="https://latex.codecogs.com/svg.image?x=±1" title="x=±1" />
+so minimizing these equations will map many of our datapoints to
+     <img src="https://latex.codecogs.com/svg.image?x=1" title="x=1" />
+and many of them to
+     <img src="https://latex.codecogs.com/svg.image?x=-1" title="x=-1" />
+, resulting in two different clusters. Because
+     <img src="https://latex.codecogs.com/svg.image?h" title="h" />
+becomes huge for large
+     <img src="https://latex.codecogs.com/svg.image?x" title="x" />
+values (
+     <img src="https://latex.codecogs.com/svg.image?h" title="h" />
+is quartic), we construct
+     <img src="https://latex.codecogs.com/svg.image?f" title="f" />
+which is just like
+     <img src="https://latex.codecogs.com/svg.image?h" title="h" />
+except that when
+     <img src="https://latex.codecogs.com/svg.image?x" title="x" />
+is too big we clip its growth with linear functions. More explitically,
+     <img src="https://latex.codecogs.com/svg.image?f" title="f" />
+has three parts. When
+     <img src="https://latex.codecogs.com/svg.image?x" title="x" />
+is small, 
+     <img src="https://latex.codecogs.com/svg.image?|x|&space;\leq&space;a" title="|x| \leq a" />
+, we will minimize
+     <img src="https://latex.codecogs.com/svg.image?h" title="h" />
+which has two valleys around
+     <img src="https://latex.codecogs.com/svg.image?±1" title="±1" />
+. When
+     <img src="https://latex.codecogs.com/svg.image?x" title="x" />
+is too big,
+     <img src="https://latex.codecogs.com/svg.image?|x|&space;>&space;b" title="|x| > b" />
+, we will minimize a linear function so our values don't blow up. When
+     <img src="https://latex.codecogs.com/svg.image?x" title="x" />
+is somewhere in between,
+     <img src="https://latex.codecogs.com/svg.image?a&space;<&space;|x|&space;\leq&space;b" title="a < |x| \leq b" />
+, we use a cubic spline to connect the valleys to the linear function.
 
 ![Discriminate functions](/reports/figures/discriminant.png)
 
