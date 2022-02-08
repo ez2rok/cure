@@ -138,9 +138,11 @@ where
      <img src="https://latex.codecogs.com/svg.image?\hat{y}_i" title="\hat{y}_i" />
 is the predicted label of the
      <img src="https://latex.codecogs.com/svg.image?i" title="i" />
-th sample for all
+th sample for all datapoints
      <img src="https://latex.codecogs.com/svg.image?i&space;=&space;1,&space;\hdots,&space;n" title="i = 1, \hdots, n" />
-. The sgn() function puts all positive datapoints into one cluster and all negative datapoints into a different cluster. And these are our clusters! That's it.
+. The 
+     <img src="https://latex.codecogs.com/svg.image?\text{sgn}" title="\text{sgn}" />
+function puts all positive datapoints into one cluster and all negative datapoints into a different cluster. And these are our clusters! That's it.
 
 # Coding Overview
 
