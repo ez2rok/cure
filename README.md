@@ -166,6 +166,8 @@ $ y^{\text{pred}}_i = \text{sgn}( \boldsymbol{\beta}^* \boldsymbol{X_i} ) $.
 This calls both `fit` and `predict` on the training data.
 
 
+# Experiments
+
 <p align="center">
     <img src="/reports/figures/experiment1/cure_animation.gif" alt="GIF of CURE" width="400" height="400" />
 </p>
