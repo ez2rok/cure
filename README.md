@@ -130,7 +130,11 @@ in 1D space and computes on average how well the data is separated into two even
 , that result in this minimization.
 
 ### Clustering
-Once we have computed $\boldsymbol{\beta}^*$, the clustering comes into play:
+Once we have computed
+     <img src="https://latex.codecogs.com/svg.image?\boldsymbol{\beta}^*" title="\boldsymbol{\beta}^*" />
+, the clustering comes into play:
+<img src="https://latex.codecogs.com/svg.image?y^{\text{pred}}_i&space;=&space;\text{sgn}(&space;\boldsymbol{\beta}^*&space;\boldsymbol{X_i}&space;)" title="y^{\text{pred}}_i = \text{sgn}( \boldsymbol{\beta}^* \boldsymbol{X_i} )" />
+
 \begin{align}
     y^{\text{pred}}_i
     &= 
