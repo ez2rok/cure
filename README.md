@@ -193,7 +193,7 @@ And finally we have the misclassification rate which is a tiny 0.4% or 0.004. It
 ### Experiment 2
 Experiment 2 compares the performance of CURE and many other clustering algorithms on various datasets.
 <p align="center">
-     <img src="cure/reports/figures/compare_clustering.png" alt="Experiment 2 Graphic"
+     <img src="./reports/figures/compare_clustering.png" alt="Experiment 2 Graphic"
 </p>
 
 
