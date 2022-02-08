@@ -161,6 +161,7 @@ When you call `fit`, it returns the weights that result in the best performance 
 
 #### predict()
 When you call `predict`, it uses the weights computed in `fit` to predict a label for each datapoint. It uses the equation
+     <img src="https://latex.codecogs.com/svg.image?\hat{y}_i&space;=&space;\text{sgn}(&space;\boldsymbol{\beta}^*&space;\boldsymbol{X_i}&space;)" title="\hat{y}_i = \text{sgn}( \boldsymbol{\beta}^* \boldsymbol{X_i} )" />
 $ y^{\text{pred}}_i = \text{sgn}( \boldsymbol{\beta}^* \boldsymbol{X_i} ) $.
 
 #### fit_predict()
