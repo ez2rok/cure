@@ -103,7 +103,7 @@ is somewhere in between,
 
 
 <p align="center">
-    <img src="/reports/figures/discriminant.pngf" alt="Discriminate functions" width="400" height="400" />
+    <img src="/reports/figures/discriminant.png" alt="Discriminate functions" width="400" height="400" />
 </p>
 
 
