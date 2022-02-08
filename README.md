@@ -1,17 +1,14 @@
 # CURE
 Implement the clustering algorithm Clustering via Uncoupled  REgression (CURE) from Wang's paper [Efficient Clustering for Stretched Mixtures: Landscape and Optimality](https://arxiv.org/abs/2003.09960).
 
-<p align="center">
-    <img src="/reports/figures/experiment1/cure_animation.gif" alt="GIF of CURE" width="400" height="400" />
-</p>
-
-
-# Problem Description
+# Explanation
 
 ## Motivation
 Many traditional clustering algorithms struggle to cluster elliptically distributed data. KNN, for example, assumes the data is spherically distributed and performs poorly when data is elliptically distributed. CURE seeks to solve this problem by creating a clustering algorithm that excels at clustering elliptically distributed data.
 
-## Equations
+## Loss Function
+
+### Equations
 
 CURE seeks to find the weights that minimize the loss function
 
@@ -58,7 +55,7 @@ and
     <img src="https://latex.codecogs.com/svg.image?h(x)&space;=&space;(x^2-1)^2/4" title="h(x) = (x^2-1)^2/4" />
 .
 
-## Explanation
+### Explain the Equations
 
 We embed the data $\boldsymbol{X}$ into 1D space via the dot product $x = \boldsymbol{\beta}^T \boldsymbol{X_i}$. Then we plug $x$ into the discriminative function $f$ to separate, ie. discriminate, the embedded data into two clusters. How does this work? $f$ and $h$ both have minimums at both x=±1 so minimizing these equations will map many of our datapoints to x=1 and many of them to x=-1, resulting in two different clusters. Because $h$ becomes huge for large $x$ values ($h$ is quartic), we construct $f$ which is just like $h$ except that when $x$ is too big we clip its growth with linear functions. More explitically, $f$ has three parts. When $x$ is small, $|x| \leq a$, we will minimize $h$ which has two valleys around ±1. When $x$ is too big, $|x| > b$, we will minimize a linear function so our values don't blow up. When $x$ is somewhere in between, $a < |x| \leq b$, we use a cubic spline to connect the valleys to the linear function.
 
@@ -93,3 +90,8 @@ $ y^{\text{pred}}_i = \text{sgn}( \boldsymbol{\beta}^* \boldsymbol{X_i} ) $.
 
 #### fit_predict()
 This calls both `fit` and `predict` on the training data.
+
+
+<p align="center">
+    <img src="/reports/figures/experiment1/cure_animation.gif" alt="GIF of CURE" width="400" height="400" />
+</p>
