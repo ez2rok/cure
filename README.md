@@ -104,7 +104,7 @@ is somewhere in between,
 ![Discriminate functions](/reports/figures/discriminant.png)
 
 So
-     <img src="https://latex.codecogs.com/svg.image?\frac{1}{n}&space;\sum\nolimits_{i=1}^{n}&space;f(&space;\boldsymbol{\beta}^T&space;\boldsymbol{X_i})" title="\frac{1}{n} \sum\nolimits_{i=1}^{n} f( \boldsymbol{\beta}^T \boldsymbol{X_i})" />
+     <img src="https://latex.codecogs.com/svg.image?1/n&space;\sum\nolimits_{i=1}^{n}&space;f(&space;\boldsymbol{\beta}^T&space;\boldsymbol{X_i})" title="1/n \sum\nolimits_{i=1}^{n} f( \boldsymbol{\beta}^T \boldsymbol{X_i})" />
 embeds the data
      <img src="https://latex.codecogs.com/svg.image?\boldsymbol{X}" title="\boldsymbol{X}" />
 in 1D space and computes on average how well the data is separated into two clusters located at 
