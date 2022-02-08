@@ -146,7 +146,7 @@ I designed CURE so it resembles many of the classifiers in `scikit-learn`. And I
 When you initialize the class, you specify the the random seed and the parameters `a, b`.
 
 #### fit()
-When you call `fit`, it returns the weights that result in the best performance by minimizing the loss function. It relies upon `scikit-learn`'s minimization function.
+When you call `fit`, it returns the weights that result in the best performance by minimizing the loss function. It relies upon `scipy`'s minimization function.
 
 #### predict()
 When you call `predict`, it uses the weights computed in `fit` to predict a label for each datapoint. It uses the equation
