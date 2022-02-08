@@ -140,7 +140,7 @@ where $y^{\text{pred}}_i$ is the predicted label of the $i$th sample. This funct
 
 # Coding Overview
 
-I designed CURE so it resembles many of the classifiers in `scikit-learn`. And I did this by creating a `CURE` class with `__init__` and three methods.
+I designed CURE so it resembles many of the classifiers in `scikit-learn`. And I did this by creating a `cure` class with `__init__` and three methods.
 
 #### \_\_init__
 When you initialize the class, you specify the the random seed and the parameters `a, b`.
