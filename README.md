@@ -1,4 +1,4 @@
-<img src="https://latex.codecogs.com/svg.image?\begin{displaymath}&space;&space;\frac{\sum_{s&space;\in&space;S}&space;s^2}{\sum_{p&space;\in&space;P}&space;p^2}\end{displaymath}" title="\begin{displaymath} \frac{\sum_{s \in S} s^2}{\sum_{p \in P} p^2}\end{displaymath}" />
+<img src="https://latex.codecogs.com/svg.image?\begin{displaymath}&space;&space;\sum_{i=0}^{n}\end{displaymath}" title="\begin{displaymath} \sum_{i=0}^{n}\end{displaymath}" />
 
 
 # CURE
