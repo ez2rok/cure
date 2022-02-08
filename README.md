@@ -216,14 +216,9 @@ Then for every dataset and algorithm, I recorded the time it took for the algori
 3. CURE only performed well on clusters that were linearly seperable, ie it performed quite poorly on the first two datasets. This suggests that CURE might only work well on data with a linear decision boundary.
 4. Generally speaking, CURE was on par with the rest of the well known clustering algorithms. However, Spectral Clustering performed the best overall.
      
+   
      
-
-### Experiment 3
-<p align="center">
-    <img src="./reports/figures/misclassification_rates.png" alt="Experiment 3 Graphic" width="400" height="400" />
-</p>
-     
-     
+### Animation of CURE     
      
 <p align="center">
     <img src="/reports/figures/experiment1/cure_animation.gif" alt="GIF of CURE" width="400" height="400" />
