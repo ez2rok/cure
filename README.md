@@ -173,11 +173,12 @@ This calls both `fit` and `predict` on the training data.
 ### Experiment 1
 Let's use CURE to cluster some elliptically distributed data. 
 
-  True Clustering  | Predicted Clustering
+  True Clustering  | CURE Clustering
   ------------- | -------------
-  Content Cell  | Content Cell
+  <img src="/reports/figures/experiment1/true_clustering.png" alt="Experiment 1: True Clustering" width="300" height="200" />
+  | <img src="/reports/figures/experiment1/cure_clustering.png" alt="Experiment 1: True Clustering" width="300" height="200" />
 
-<img src="/reports/figures/experiment1/cure_clustering.png" alt="Experiment 1: True Clustering" width="300" height="200" />
+
 
 
 
