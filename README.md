@@ -1,5 +1,9 @@
 # CURE
-Implement the clustering algorithm Clustering via Uncoupled  REgression (CURE) from Wang's paper [Efficient Clustering for Stretched Mixtures: Landscape and Optimality](https://arxiv.org/abs/2003.09960).
+This repository implements the clustering algorithm Clustering via Uncoupled  REgression (CURE) from Wang's paper [Efficient Clustering for Stretched Mixtures: Landscape and Optimality](https://arxiv.org/abs/2003.09960). It also conducts several experiments to benchmark the performance of CURE.
+
+### Table of Contents
+1. [Explanation](https://github.com/ez2rok/cure/blob/master/README.md#explanation)
+2. [Coding Overview](https://github.com/ez2rok/cure/blob/master/README.md#coding-overview)
 
 # Explanation
 
