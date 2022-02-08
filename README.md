@@ -24,7 +24,15 @@ CURE seeks to find the weights that minimize the loss function
 
 where 
     <img src="https://latex.codecogs.com/svg.image?\boldsymbol{\beta}&space;\in&space;\mathbb{R}^d" title="\boldsymbol{\beta} \in \mathbb{R}^d" /> 
-are the weights, $\boldsymbol{\beta}^{*} \in \mathbb{R}^d$ are the optimal weights that minimize the above equation, $\boldsymbol{X_i} \in \mathbb{R}^d$ is a sample data point with $d$ features, $\boldsymbol{X} \in \mathbb{R}^{n \times d}$ is a matrix of $n$ datapoints each with $d$ features, and $\hat{\boldsymbol{\mu_0}} = \frac{1}{n} \sum_{i=1}^{n} \boldsymbol{X_i}$ is the value of the average data point. To get $\boldsymbol{X}$ we preappend a column of ones $\boldsymbol{1} \in \mathbb{R}^n$ to the data (which is really $\mathbb{R}^{n \times (d - 1)}$) to give us an intercept term. 
+are the weights, 
+    <img src="https://latex.codecogs.com/svg.image?\boldsymbol{\beta}^{*}&space;\in&space;\mathbb{R}^d" title="\boldsymbol{\beta}^{*} \in \mathbb{R}^d" />
+are the optimal weights that minimize the above equation, 
+    <img src="https://latex.codecogs.com/svg.image?\boldsymbol{X_i}&space;\in&space;\mathbb{R}^d" title="\boldsymbol{X_i} \in \mathbb{R}^d" />
+is a sample data point with 
+    <img src="https://latex.codecogs.com/svg.image?d" title="d" />
+features, 
+    <img src="https://latex.codecogs.com/svg.image?\boldsymbol{X}&space;\in&space;\mathbb{R}^{n&space;\times&space;d}" title="\boldsymbol{X} \in \mathbb{R}^{n \times d}" />
+is a matrix of $n$ datapoints each with $d$ features, and $\hat{\boldsymbol{\mu_0}} = \frac{1}{n} \sum_{i=1}^{n} \boldsymbol{X_i}$ is the value of the average data point. To get $\boldsymbol{X}$ we preappend a column of ones $\boldsymbol{1} \in \mathbb{R}^n$ to the data (which is really $\mathbb{R}^{n \times (d - 1)}$) to give us an intercept term. 
 
 The discriminative function $f : \mathbb{R} \rightarrow \mathbb{R}$ is defined as
 
