@@ -110,7 +110,7 @@ embeds the data
 in 1D space and computes on average how well the data is separated into two clusters located at 
      <img src="https://latex.codecogs.com/svg.image?x" title="x" />
 =±1. The lower this value, the better. However, we can minimize this function by clustering all of the datapoints into a single cluster. To avoid this trivial solution, we use the penalty term
-     <img src="https://latex.codecogs.com/svg.image?1/2&space;(\boldsymbol{\beta}^T&space;\hat{\boldsymbol{\mu_0}})^2" title="1/2 (\boldsymbol{\beta}^T \hat{\boldsymbol{\mu_0}})^2" />
+     <img src="https://latex.codecogs.com/svg.image?0.5&space;(\boldsymbol{\beta}^T&space;\hat{\boldsymbol{\mu_0}})^2" title="0.5 (\boldsymbol{\beta}^T \hat{\boldsymbol{\mu_0}})^2" />
 . This term encourages the data
      <img src="https://latex.codecogs.com/svg.image?\boldsymbol{X}" title="\boldsymbol{X}" />
 to be evenly split between the two clusters at
