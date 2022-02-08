@@ -177,14 +177,17 @@ Let's use CURE to cluster some elliptically distributed data.
   ------------- | -------------
   ![Experiment 1: True Clustering](/reports/figures/experiment1/true_clustering.png) |  ![Experiment 1: CURE Clustering](/reports/figures/experiment1/cure_clustering.png)
   
-  
-  
-  <img src="/reports/figures/experiment1/true_clustering.png" alt="Experiment 1: True Clustering" width="50" height="50" />
-  | <img src="/reports/figures/experiment1/cure_clustering.png" alt="Experiment 1: True Clustering" width="50" height="50" />
+From these two plots, it seems like CURE pretty perfectly predicts which datapoint belongs to which cluster. This is a great visual check that everything is working.
 
+Next, we look at the adjusted rand index (ARI), a measure of the similarity between two different data clusterings (here, 
+<img src="https://latex.codecogs.com/svg.image?y_i" title="y_i" />
+and 
+     <img src="https://latex.codecogs.com/svg.image?\hat{y}_i" title="\hat{y}_i" />
+for all datapoints
+     <img src="https://latex.codecogs.com/svg.image?i&space;=&space;1,&space;\hdots,&space;n" title="i = 1, \hdots, n" />
+) that is adjusted for the chance grouping of elements. This is the clustering analogue for accuracy with a lower bound of -1 and an upper bound of 1; an ARI of 0 corresponds to the average clustering, ie a random guess. Our clustering achieved an adjusted rand index of 0.98 which is pretty great!
 
-
-
+And finally we have the misclassification rate which is a tiny 0.4% or 0.004. It seems like we may have made a few incorrect predictions by the border between the data. Nonetheless, CURE clearly does a great job of clustering on this elliptically distributed data.
 
 
 
