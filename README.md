@@ -196,7 +196,27 @@ Experiment 2 compares the performance of CURE and many other clustering algorith
      <img src="./reports/figures/compare_clustering.png" alt="Experiment 2 Graphic"
 </p>
 
+The clustering algorithms tested are:
+1. CURE
+2. KMeans
+3. Meanshift
+4. Spectral clustering
+5. Ward
+6. Agglomerative Clustering
+7. DBSCAN
+8. OPTICS
+9. BIRCH
+10. Gaussian Mixture
 
+Then for every dataset and algorithm, I recorded the time it took for the algorithm to run and the Adjusted Rand Index (ARI). 
+
+#### A couple of observations:
+1. CURE had near-constant runtime, regardless of the distribution of the data.
+2. CURE achieved perfect classification on the two elliptically distributed datasets. In other words, it did exactly what it was suppossed to do.
+3. CURE only performed well on clusters that were linearly seperable, ie it performed quite poorly on the first two datasets. This suggests that CURE might only work well on data with a linear decision boundary.
+4. Generally speaking, CURE was on par with the rest of the well known clustering algorithms. However, Spectral Clustering performed the best overall.
+     
+     
 
 <p align="center">
     <img src="/reports/figures/experiment1/cure_animation.gif" alt="GIF of CURE" width="400" height="400" />
