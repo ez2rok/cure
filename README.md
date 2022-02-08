@@ -32,7 +32,19 @@ is a sample data point with
     <img src="https://latex.codecogs.com/svg.image?d" title="d" />
 features, 
     <img src="https://latex.codecogs.com/svg.image?\boldsymbol{X}&space;\in&space;\mathbb{R}^{n&space;\times&space;d}" title="\boldsymbol{X} \in \mathbb{R}^{n \times d}" />
-is a matrix of $n$ datapoints each with $d$ features, and $\hat{\boldsymbol{\mu_0}} = \frac{1}{n} \sum_{i=1}^{n} \boldsymbol{X_i}$ is the value of the average data point. To get $\boldsymbol{X}$ we preappend a column of ones $\boldsymbol{1} \in \mathbb{R}^n$ to the data (which is really $\mathbb{R}^{n \times (d - 1)}$) to give us an intercept term. 
+is a matrix of 
+    <img src="https://latex.codecogs.com/svg.image?n" title="n" />
+datapoints each with
+    <img src="https://latex.codecogs.com/svg.image?d" title="d" />
+features, and 
+    <img src="https://latex.codecogs.com/svg.image?\hat{\boldsymbol{\mu_0}}&space;=&space;\frac{1}{n}&space;\sum_{i=1}^{n}&space;\boldsymbol{X_i}" title="\hat{\boldsymbol{\mu_0}} = \frac{1}{n} \sum_{i=1}^{n} \boldsymbol{X_i}" />
+is the value of the average data point. To get 
+    <img src="https://latex.codecogs.com/svg.image?\boldsymbol{X}" title="\boldsymbol{X}" />
+we preappend a column of ones 
+    <img src="https://latex.codecogs.com/svg.image?\boldsymbol{1}&space;\in&space;\mathbb{R}^n" title="\boldsymbol{1} \in \mathbb{R}^n" />
+to the data (which is really 
+    <img src="https://latex.codecogs.com/svg.image?\mathbb{R}^{n&space;\times&space;(d&space;-&space;1)}" title="\mathbb{R}^{n \times (d - 1)}" />
+) to give us an intercept term. 
 
 The discriminative function $f : \mathbb{R} \rightarrow \mathbb{R}$ is defined as
 
