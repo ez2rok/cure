@@ -66,8 +66,8 @@ to separate, ie. discriminate, the embedded data into two clusters. How does thi
 and
      <img src="https://latex.codecogs.com/svg.image?h" title="h" />
 both have minimums at both
-     <img src="https://latex.codecogs.com/svg.image?x=±1" title="x=±1" />
-so minimizing these equations will map many of our datapoints to
+     <img src="https://latex.codecogs.com/svg.image?x" title="x" />
+±1 so minimizing these equations will map many of our datapoints to
      <img src="https://latex.codecogs.com/svg.image?x=1" title="x=1" />
 and many of them to
      <img src="https://latex.codecogs.com/svg.image?x=-1" title="x=-1" />
