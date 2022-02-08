@@ -55,7 +55,7 @@ The discriminative function <img src="https://latex.codecogs.com/svg.image?f&spa
 where 
     <img src="https://latex.codecogs.com/svg.image?b&space;>&space;a&space;>&space;1" title="b > a > 1" />
 and 
-    <img src="https://latex.codecogs.com/svg.image?h(x)&space;=&space;\frac{(x^2-1)^2}{4}" title="h(x) = \frac{(x^2-1)^2}{4}" />
+    <img src="https://latex.codecogs.com/svg.image?h(x)&space;=&space;(x^2-1)^2/4" title="h(x) = (x^2-1)^2/4" />
 .
 
 ## Explanation
