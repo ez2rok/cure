@@ -67,7 +67,7 @@ and
      <img src="https://latex.codecogs.com/svg.image?h" title="h" />
 both have minimums at both
      <img src="https://latex.codecogs.com/svg.image?x" title="x" />
-±1 so minimizing these equations will map many of our datapoints to
+=±1 so minimizing these equations will map many of our datapoints to
      <img src="https://latex.codecogs.com/svg.image?x=1" title="x=1" />
 and many of them to
      <img src="https://latex.codecogs.com/svg.image?x=-1" title="x=-1" />
@@ -108,10 +108,22 @@ So
 embeds the data
      <img src="https://latex.codecogs.com/svg.image?\boldsymbol{X}" title="\boldsymbol{X}" />
 in 1D space and computes on average how well the data is separated into two clusters located at 
-<img src="https://latex.codecogs.com/svg.image?x" title="x" />
-=±1. The lower this value, the better. However, we can minimize this function by clustering all of the datapoints into a single cluster. To avoid this trivial solution, we use the penalty term $\frac{1}{2} (\boldsymbol{\beta}^T \hat{\boldsymbol{\mu_0}})^2$. This term encourages the data $\boldsymbol{X}$ to be evenly split between the two clusters at x=±1 as this term has the lowest value when $\hat{\boldsymbol{\mu_0}} = 0$ which only occurs when the data is evenly split between both clusters. 
+     <img src="https://latex.codecogs.com/svg.image?x" title="x" />
+=±1. The lower this value, the better. However, we can minimize this function by clustering all of the datapoints into a single cluster. To avoid this trivial solution, we use the penalty term
+     <img src="https://latex.codecogs.com/svg.image?1/2&space;(\boldsymbol{\beta}^T&space;\hat{\boldsymbol{\mu_0}})^2" title="1/2 (\boldsymbol{\beta}^T \hat{\boldsymbol{\mu_0}})^2" />
+. This term encourages the data
+     <img src="https://latex.codecogs.com/svg.image?\boldsymbol{X}" title="\boldsymbol{X}" />
+to be evenly split between the two clusters at
+     <img src="https://latex.codecogs.com/svg.image?x" title="x" />
+=±1 as this term has the lowest value when
+     <img src="https://latex.codecogs.com/svg.image?\hat{\boldsymbol{\mu_0}}&space;=&space;0" title="\hat{\boldsymbol{\mu_0}} = 0" />
+which only occurs when the data is evenly split between both clusters. 
 
-Putting it all together, the loss function embeds the data $\boldsymbol{X} $ in 1D space and computes on average how well the data is separated into two evenly sized clusters located at x=±1. We minimize this score and record the weights, $\boldsymbol{\beta}^*$, that result in this minimization.
+Putting it all together, the loss function embeds the data
+     <img src="https://latex.codecogs.com/svg.image?\boldsymbol{X}" title="\boldsymbol{X}" />
+in 1D space and computes on average how well the data is separated into two evenly sized clusters located at x=±1. We minimize this score and record the weights,
+     <img src="https://latex.codecogs.com/svg.image?\boldsymbol{\beta}^*" title="\boldsymbol{\beta}^*" />
+, that result in this minimization.
 
 ### Clustering
 Once we have computed $\boldsymbol{\beta}^*$, the clustering comes into play:
