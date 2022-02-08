@@ -218,6 +218,13 @@ Then for every dataset and algorithm, I recorded the time it took for the algori
      
      
 
+### Experiment 3
+<p align="center">
+    <img src="./reports/figures/misclassification_rates.png" alt="Experiment 3 Graphic" width="400" height="400" />
+</p>
+     
+     
+     
 <p align="center">
     <img src="/reports/figures/experiment1/cure_animation.gif" alt="GIF of CURE" width="400" height="400" />
 </p>
