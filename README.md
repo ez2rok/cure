@@ -6,6 +6,8 @@ Implement the clustering algorithm Clustering via Uncoupled  REgression (CURE) f
 </p>
 
 
+![](./reports/figures/experiment1/cure_animation.html)
+
 
 # Problem Description
 
