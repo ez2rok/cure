@@ -171,7 +171,7 @@ This calls both `fit` and `predict` on the training data.
 # Experiments
 
 ### Experiment 1
-Let's use CURE to cluster some elliptically distributed data. 
+For our first experiment, let's use CURE to cluster some elliptically distributed data. 
 
   True Clustering | CURE Clustering
   ------------- | -------------
@@ -188,6 +188,13 @@ for all datapoints
 ) that is adjusted for the chance grouping of elements. This is the clustering analogue for accuracy with a lower bound of -1 and an upper bound of 1; an ARI of 0 corresponds to the average clustering, ie a random guess. Our clustering achieved an adjusted rand index of 0.98 which is pretty great!
 
 And finally we have the misclassification rate which is a tiny 0.4% or 0.004. It seems like we may have made a few incorrect predictions by the border between the data. Nonetheless, CURE clearly does a great job of clustering on this elliptically distributed data.
+
+
+### Experiment 2
+Experiment 2 compares the performance of CURE and many other clustering algorithms on various datasets.
+<p align="center">
+     <img src="cure/reports/figures/compare_clustering.png" alt="Experiment 2 Graphic"
+</p>
 
 
 
