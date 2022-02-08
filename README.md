@@ -3,6 +3,7 @@ Implement the clustering algorithm Clustering via Uncoupled  REgression (CURE) f
 
 <p align="center">
     <img src="/reports/figures/experiment1/cure_animation.gif" alt="GIF of CURE" width="400" height="400" />
+    
     Caption
 </p>
 
