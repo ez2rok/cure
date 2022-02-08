@@ -101,7 +101,11 @@ is somewhere in between,
      <img src="https://latex.codecogs.com/svg.image?a&space;<&space;|x|&space;\leq&space;b" title="a < |x| \leq b" />
 , we use a cubic spline to connect the valleys to the linear function.
 
-![Discriminate functions](/reports/figures/discriminant.png)
+
+<p align="center">
+    <img src="/reports/figures/discriminant.pngf" alt="Discriminate functions" width="400" height="400" />
+</p>
+
 
 So
      <img src="https://latex.codecogs.com/svg.image?1/n&space;\sum\nolimits_{i=1}^{n}&space;f(&space;\boldsymbol{\beta}^T&space;\boldsymbol{X_i})" title="1/n \sum\nolimits_{i=1}^{n} f( \boldsymbol{\beta}^T \boldsymbol{X_i})" />
