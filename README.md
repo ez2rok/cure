@@ -141,7 +141,7 @@ is the predicted label of the
 th sample for all datapoints
      <img src="https://latex.codecogs.com/svg.image?i&space;=&space;1,&space;\hdots,&space;n" title="i = 1, \hdots, n" />
 . The 
-     <img src="https://latex.codecogs.com/svg.image?\text{sgn}" title="\text{sgn}" />
+     <img src="https://latex.codecogs.com/svg.image?\text{sgn}()" title="\text{sgn}()" />
 function puts all positive datapoints into one cluster and all negative datapoints into a different cluster. And these are our clusters! That's it.
 
 # Coding Overview
