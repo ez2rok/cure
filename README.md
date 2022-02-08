@@ -48,8 +48,9 @@ to the data (which is really
 
 The discriminative function <img src="https://latex.codecogs.com/svg.image?f&space;:&space;\mathbb{R}&space;\rightarrow&space;\mathbb{R}" title="f : \mathbb{R} \rightarrow \mathbb{R}" /> is defined as
 
+<p align="center">
 <img src="https://latex.codecogs.com/svg.image?f(x)=\begin{cases}&space;&space;&space;&space;&space;&space;&space;&space;h(x)&space;&space;&space;&space;&space;&space;&space;&space;&&space;&space;&space;&space;&space;&space;&space;&space;&space;|x|&space;\leq&space;a&space;&space;&space;&space;&space;&space;&space;&space;&space;\\&space;&space;&space;&space;&space;&space;&space;&space;f(a)&space;&plus;&space;h'(a)&space;(|x|&space;-&space;a)&space;&space;&space;&space;&space;&space;&space;&space;&space;&plus;&space;\frac{h''(a)}{2}&space;(|x|&space;-&space;a)^2&space;&space;&space;&space;&space;&space;&space;&space;&space;-&space;\frac{h''(a)}{6(b-a)}&space;(|x|&space;-&space;a)^3&space;&space;&space;&space;&space;&space;&space;&space;&&space;&space;&space;&space;&space;&space;&space;&space;&space;a&space;<&space;|x|&space;\leq&space;b&space;&space;&space;&space;&space;&space;&space;&space;&space;\\&space;&space;&space;&space;&space;&space;&space;&space;f(b)&space;&space;&space;&space;&space;&space;&space;&space;&space;&plus;&space;\Big[&space;h(a)&space;&plus;&space;\frac{b-a}{2}&space;h''(a)&space;\Big]&space;(|x|&space;-&space;b)&space;&space;&space;&space;&space;&space;&space;&space;&&space;&space;&space;&space;&space;&space;&space;&space;&space;|x|&space;>&space;b&space;&space;&space;&space;&space;&space;&space;&space;\\&space;&space;&space;&space;\end{cases}" title="f(x)=\begin{cases} h(x) & |x| \leq a \\ f(a) + h'(a) (|x| - a) + \frac{h''(a)}{2} (|x| - a)^2 - \frac{h''(a)}{6(b-a)} (|x| - a)^3 & a < |x| \leq b \\ f(b) + \Big[ h(a) + \frac{b-a}{2} h''(a) \Big] (|x| - b) & |x| > b \\ \end{cases}" />
-    
+</>
     
 $$
 f(x)
