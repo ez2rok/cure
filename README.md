@@ -9,7 +9,7 @@ This repository implements the clustering algorithm Clustering via Uncoupled  RE
 # Explanation
 
 ### Motivation
-Many traditional clustering algorithms struggle to cluster elliptically distributed data. KNN, for example, assumes the data is spherically distributed and performs poorly when data is elliptically distributed. CURE seeks to solve this problem by creating a clustering algorithm that excels at clustering elliptically distributed data.
+Many traditional clustering algorithms struggle to cluster elliptically distributed data. K-Means, for example, assumes the data is spherically distributed and performs poorly when data is elliptically distributed. CURE seeks to solve this problem by creating a clustering algorithm that excels at clustering elliptically distributed data.
 
 ### Loss Function
 
