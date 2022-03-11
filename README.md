@@ -1,5 +1,5 @@
 # CURE
-This repository implements the clustering algorithm Clustering via Uncoupled  REgression (CURE) from Wang's paper [Efficient Clustering for Stretched Mixtures: Landscape and Optimality](https://arxiv.org/abs/2003.09960) in NeurIPS 2020. It also conducts several experiments to benchmark the performance of CURE.
+This repository implements the clustering algorithm Clustering via Uncoupled  REgression (CURE) from Wang's paper [Efficient Clustering for Stretched Mixtures: Landscape and Optimality](https://arxiv.org/abs/2003.09960) (NeurIPS 2020). It also conducts several experiments to benchmark the performance of CURE.
 
 ### Table of Contents
 1. [Explanation](https://github.com/ez2rok/cure/blob/master/README.md#explanation)
